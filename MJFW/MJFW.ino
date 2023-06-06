@@ -64,9 +64,9 @@ uint16_t touch_average = 0;
 uint16_t mq_7_value = 0;
 void loop() {
 
-  // 디스플레이 실행
+  // 센서 값 읽기
   time_cur = millis();
-  if((time_cur - time_old[0]) > 100)
+  if((time_cur - time_old[0]) > 10)
   {
     touch_value = analogRead(TOUCH);
     touch_total = touch_total - touch_readings[touch_index];
@@ -86,10 +86,11 @@ void loop() {
     time_old[0] = time_cur;
   }
 
+  // 디스플레이 실행
   if((time_cur - time_old[1]) > 500)
   {
-      if(touch_average > 2000) eye_cur = DAILY_EYE;
-      else if(touch_average <= 2000) eye_cur = SMILE_EYE;
+      if(touch_average > 1000) eye_cur = DAILY_EYE;
+      else if(touch_average <= 1000) eye_cur = SMILE_EYE;
 
       displayEyes(eye_cur);
       
