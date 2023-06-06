@@ -4,12 +4,14 @@
 #define ID2            2
 #define ID3            3
 #define ID4            4
-#define LEFT_EYE  9
-#define RIGHT_EYE 10
+
+#define TOUCH           (16)
+#define MQ_7            (17)
 
 #include <AX12A.h>
 #include <math.h>
-#include <4dof.h>
+#include "4dof.h"
+#include "MJeyes.h"
 
 
 void setup() {
@@ -39,11 +41,62 @@ void setup() {
 
   // put your setup code here, to run once:
   Serial.begin(115200);  // 통신 속도
-  ax12a.begin(BaudRate, DirectionPin, &Serial1);
+//   ax12a.begin(BaudRate, DirectionPin, &Serial1);
   delay(1000);
+
+  // 디스플레이 초기화
+  initEyes();
+
+  // 아날로그 핀 초기화
+  pinMode(TOUCH, INPUT);
+  pinMode(MQ_7, INPUT);
 }
 
+uint32_t time_cur = 0;
+uint32_t time_old[5] = {0};
+EYE_TYPE eye_cur = DAILY_EYE;
+uint16_t touch_value = 0;
+#define TOUCH_READ_NUM  (20)
+uint16_t touch_readings[TOUCH_READ_NUM] = {0};
+uint8_t touch_index = 0;
+uint32_t touch_total = 0;
+uint16_t touch_average = 0;
+uint16_t mq_7_value = 0;
 void loop() {
+
+  // 디스플레이 실행
+  time_cur = millis();
+  if((time_cur - time_old[0]) > 100)
+  {
+    touch_value = analogRead(TOUCH);
+    touch_total = touch_total - touch_readings[touch_index];
+    touch_readings[touch_index] = touch_value;
+    touch_total = touch_total + touch_readings[touch_index];
+    touch_index++;
+
+    if(touch_index >= TOUCH_READ_NUM) touch_index = 0;
+    touch_average = touch_total / TOUCH_READ_NUM;
+    Serial.println(touch_average);
+
+    mq_7_value = analogRead(MQ_7);
+
+    // Serial.println(touch_value);
+    // Serial.println(mq_7_value);
+      
+    time_old[0] = time_cur;
+  }
+
+  if((time_cur - time_old[1]) > 500)
+  {
+      if(touch_average > 2000) eye_cur = DAILY_EYE;
+      else if(touch_average <= 2000) eye_cur = SMILE_EYE;
+
+      displayEyes(eye_cur);
+      
+      time_old[1] = time_cur;
+  }
+
+
 
   // Serial.read()
   if (Serial.available() <= 0) {
@@ -100,5 +153,8 @@ void loop() {
     ax12a.move(ID2, L2_a);
     ax12a.move(ID3, L3_a);
     ax12a.move(ID4, yaw_step);
+
+
   }
+
 }
