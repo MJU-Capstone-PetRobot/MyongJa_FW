@@ -42,7 +42,6 @@ void BRP(float theta, float phi) {
 }
 
 void create_l_vectors() {
-  // effectively adding the T vector initially
   BRP(theta, phi);
   T[0] = 0.0;
   T[1] = 0.0;
