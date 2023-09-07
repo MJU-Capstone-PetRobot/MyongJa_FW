@@ -50,6 +50,9 @@ void setup() {
   // 아날로그 핀 초기화
   pinMode(TOUCH, INPUT);
   pinMode(MQ_7, INPUT);
+
+  Serial.println("Hi i'm main ESP32 board");
+  neopixelWrite(RGB_BUILTIN,0,0,0);
 }
 
 uint32_t time_cur = 0;
@@ -62,100 +65,143 @@ uint8_t touch_index = 0;
 uint32_t touch_total = 0;
 uint16_t touch_average = 0;
 uint16_t mq_7_value = 0;
+uint32_t comm_cnt = 0;
 void loop() {
 
   // 센서 값 읽기
   time_cur = millis();
-  if((time_cur - time_old[0]) > 10)
-  {
-    touch_value = analogRead(TOUCH);
-    touch_total = touch_total - touch_readings[touch_index];
-    touch_readings[touch_index] = touch_value;
-    touch_total = touch_total + touch_readings[touch_index];
-    touch_index++;
+//   if((time_cur - time_old[0]) > 10)
+//   {
+//     touch_value = analogRead(TOUCH);
+//     touch_total = touch_total - touch_readings[touch_index];
+//     touch_readings[touch_index] = touch_value;
+//     touch_total = touch_total + touch_readings[touch_index];
+//     touch_index++;
 
-    if(touch_index >= TOUCH_READ_NUM) touch_index = 0;
-    touch_average = touch_total / TOUCH_READ_NUM;
-    Serial.println(touch_average);
+//     if(touch_index >= TOUCH_READ_NUM) touch_index = 0;
+//     touch_average = touch_total / TOUCH_READ_NUM;
+//     // Serial.println(touch_average);
 
-    mq_7_value = analogRead(MQ_7);
+//     mq_7_value = analogRead(MQ_7);
 
-    // Serial.println(touch_value);
-    // Serial.println(mq_7_value);
+//     // Serial.println(touch_value);
+//     // Serial.println(mq_7_value);
       
-    time_old[0] = time_cur;
-  }
+//     time_old[0] = time_cur;
+//   }
 
-  // 디스플레이 실행
-  if((time_cur - time_old[1]) > 500)
-  {
-      if(touch_average > 1000) eye_cur = DAILY_EYE;
-      else if(touch_average <= 1000) eye_cur = SMILE_EYE;
+//   // 디스플레이 실행
+//   if((time_cur - time_old[1]) > 500)
+//   {
+//       if(touch_average > 1000) eye_cur = DAILY_EYE;
+//       else if(touch_average <= 1000) eye_cur = SMILE_EYE;
 
-      displayEyes(eye_cur);
+//       displayEyes(eye_cur);
       
-      time_old[1] = time_cur;
-  }
+//       time_old[1] = time_cur;
+//   }
 
+    // 통신 확인
+    // if((time_cur - time_old[2]) > 1000)
+    // {
+    // Serial.print("Hi i'm main ESP32 board ");
+    // Serial.println(comm_cnt);
+    // comm_cnt++;
 
+    // time_old[2] = time_cur;
+    // }
 
-  // Serial.read()
-  if (Serial.available() <= 0) {
-    return;
-  }
-  char ch = Serial.read();
-  RCVdata += ch;
-  if (ch == '\n') {
-
-    if (RCVdata.length() > 0) {
-      int index;
-      int tmpcnt = 0;
-      String tmpString = RCVdata;
-      tmpString.trim();
-      Serial.print("command in rx, ry, z, rz  ");
-      Serial.println(tmpString);
-
-      while (tmpString.length() > 0) {
-        index = tmpString.indexOf(",");
-        if (index == -1) {
-          CMDdataDEG[tmpcnt] = tmpString;
-          CMDdataDEG[tmpcnt].trim();
-          tmpcnt++;
-          break;
-        }
-
-        CMDdataDEG[tmpcnt] = tmpString.substring(0, index);
-        tmpString = tmpString.substring(index + 1);
-        tmpString.trim();
-        CMDdataDEG[tmpcnt].trim();
-        tmpcnt++;
-      }
+    // Echo
+    if (Serial.available() <= 0) 
+    {
+        return;
     }
 
-    // 파이썬으로 부터 데이터 받음.
-    theta = CMDdataDEG[0].toFloat(); //roll
-    phi = CMDdataDEG[1].toFloat(); //pitch
-    z_set = CMDdataDEG[2].toFloat(); //z-distance
-    yaw = CMDdataDEG[3].toFloat(); //z-axis yaw
-    yaw_step = map(yaw, -150, 150, 0, 1023);
-    // 역기구학 계산
-    create_l_vectors();                                                                // create the end-effector vectors
-    L1_a = step_transform(sqrt((l1[0] * l1[0]) + (l1[1] * l1[1]) + (l1[2] * l1[2])));  // norm and
-    L2_a = step_transform(sqrt((l2[0] * l2[0]) + (l2[1] * l2[1]) + (l2[2] * l2[2])));  // convert to steps
-    L3_a = step_transform(sqrt((l3[0] * l3[0]) + (l3[1] * l3[1]) + (l3[2] * l3[2])));
+    char ch = Serial.read();
+    RCVdata += ch;
+
+    if (ch == '\n') 
+    {
+        if (RCVdata.length() > 0) 
+        {
+            String tmpString = RCVdata;
+            tmpString.trim();
+            Serial.print("[ESP] ");
+            Serial.println(tmpString);
+
+            if(tmpString.compareTo(String("RED")) == 0)
+                neopixelWrite(RGB_BUILTIN,RGB_BRIGHTNESS,0,0); // Red
+            else if(tmpString.compareTo(String("GREEN")) == 0)
+                neopixelWrite(RGB_BUILTIN,0,RGB_BRIGHTNESS,0); // Green
+            else if(tmpString.compareTo(String("BLUE")) == 0)
+                neopixelWrite(RGB_BUILTIN,0,0,RGB_BRIGHTNESS); // Blue
+            else
+                neopixelWrite(RGB_BUILTIN,RGB_BRIGHTNESS,RGB_BRIGHTNESS,RGB_BRIGHTNESS); // White
+
+        }
+
+        RCVdata = "";
+    }
 
 
 
-    RCVdata = "";
-    
-    Serial.printf("%d ,%d, %d, %d", L1_a, L2_a, L3_a, yaw_step);
+    // // Serial.read()
+    // if (Serial.available() <= 0) 
+    // {
+    //     return;
+    // }
 
-    ax12a.move(ID1, L1_a);
-    ax12a.move(ID2, L2_a);
-    ax12a.move(ID3, L3_a);
-    ax12a.move(ID4, yaw_step);
+    // char ch = Serial.read();
+    // RCVdata += ch;
 
+    // if (ch == '\n') 
+    // {
+    //     if (RCVdata.length() > 0) 
+    //     {
+    //         int index;
+    //         int tmpcnt = 0;
+    //         String tmpString = RCVdata;
+    //         tmpString.trim();
+    //         Serial.print("command in rx, ry, z, rz  ");
+    //         Serial.println(tmpString);
 
-  }
+    //         while (tmpString.length() > 0) {
+    //         index = tmpString.indexOf(",");
+    //         if (index == -1) {
+    //             CMDdataDEG[tmpcnt] = tmpString;
+    //             CMDdataDEG[tmpcnt].trim();
+    //             tmpcnt++;
+    //             break;
+    //         }
+
+    //         CMDdataDEG[tmpcnt] = tmpString.substring(0, index);
+    //         tmpString = tmpString.substring(index + 1);
+    //         tmpString.trim();
+    //         CMDdataDEG[tmpcnt].trim();
+    //         tmpcnt++;
+    //         }
+    //     }
+
+    //     // 파이썬으로 부터 데이터 받음.
+    //     theta = CMDdataDEG[0].toFloat(); //roll
+    //     phi = CMDdataDEG[1].toFloat(); //pitch
+    //     z_set = CMDdataDEG[2].toFloat(); //z-distance
+    //     yaw = CMDdataDEG[3].toFloat(); //z-axis yaw
+    //     yaw_step = map(yaw, -150, 150, 0, 1023);
+    //     // 역기구학 계산
+    //     create_l_vectors();                                                                // create the end-effector vectors
+    //     L1_a = step_transform(sqrt((l1[0] * l1[0]) + (l1[1] * l1[1]) + (l1[2] * l1[2])));  // norm and
+    //     L2_a = step_transform(sqrt((l2[0] * l2[0]) + (l2[1] * l2[1]) + (l2[2] * l2[2])));  // convert to steps
+    //     L3_a = step_transform(sqrt((l3[0] * l3[0]) + (l3[1] * l3[1]) + (l3[2] * l3[2])));
+
+    //     RCVdata = "";
+        
+    //     Serial.printf("%d ,%d, %d, %d", L1_a, L2_a, L3_a, yaw_step);
+
+    //     ax12a.move(ID1, L1_a);
+    //     ax12a.move(ID2, L2_a);
+    //     ax12a.move(ID3, L3_a);
+    //     ax12a.move(ID4, yaw_step);
+    // } 
 
 }

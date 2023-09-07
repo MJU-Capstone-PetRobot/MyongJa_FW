@@ -3,6 +3,8 @@ FW code for MJ robot
 
 
 ## 개발환경
+개발보드
+- esp32 s3 dev board
 
 - 개발보드 : esp32 s3 dev board
 - IDE : arduino IDE 
