@@ -1,12 +1,8 @@
 # MyongJa_FW
 FW code for MJ robot
 
-
 ## 개발환경
-개발보드
-- esp32 s3 dev board
-
-- 개발보드 : esp32 s3 dev board
+- 개발보드 : [esp32 s3 dev board](https://smartstore.naver.com/bneware/products/6729229592)
 - IDE : arduino IDE 
 - 아두이노 라이브러리
     - [Dynamixel AX-12A Robot Actuator](https://github.com/likhogub/AX-12A-servo-library/tree/master)
