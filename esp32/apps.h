@@ -5,19 +5,19 @@ typedef struct
     float RPZY[4];
     int emo_code;
 
-    bool touch;
+    int touch;
     int co_value;
     int distance;
     int bat_percent;
     int bat_hour;
 
-} ESP32;
+} ESP32_DATA;
 
-ESP32 mj_esp32;
+ESP32_DATA myoungja;
 
 void init_default_value()
 {
-    memset(&mj_esp32, 0, sizeof(mj_esp32));
+    memset(&myoungja, 0, sizeof(myoungja));
 }
 
 void send_to_opi()
