@@ -36,6 +36,8 @@ def main():
             strcmd += '\n'
             SerialObj.write(strcmd.encode())
             time.sleep(1)
+        # 키보드 입력 받아서 명령
+        # 목 제어, 표정
 
     alive_thread = False
 

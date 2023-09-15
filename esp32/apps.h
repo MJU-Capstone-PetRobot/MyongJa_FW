@@ -5,11 +5,12 @@ typedef struct
     float RPZY[4];
     int emo_code;
 
-    int touch;
+    bool touch;
+    bool touch_prev;
     int co_value;
     int distance;
-    int bat_percent;
-    int bat_hour;
+    String bat_percent;
+    String bat_hour;
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
@@ -21,8 +22,40 @@ void init_default_value()
 
 void send_to_opi()
 {
-    // pid 1이면 
-    // tx 플래그
+    static uint32_t time_cur = 0;
+    static uint32_t time_old[5] = {0};
+
+    time_cur = millis();
+
+    if(myoungja.touch != myoungja.touch_prev)
+    {
+        Serial.printf("<T%s>\n", String(myoungja.touch));
+    }
+
+    if((time_cur - time_old[0]) > 100)
+    {
+        // 초음파 센서
+        myoungja.distance = 1500;
+        Serial.printf("<D%s>\n", String(myoungja.distance));
+        time_old[0] = time_cur;
+    }
+
+    if((time_cur - time_old[1]) > 1000)
+    {
+        // CO 농도
+        myoungja.co_value = 200;
+        Serial.printf("<C%s>\n", String(myoungja.co_value));
+        time_old[1] = time_cur;
+    }
+
+    if((time_cur - time_old[2]) > 1000)
+    {
+        // 배터리 잔량
+        myoungja.bat_percent = "90%";
+        myoungja.bat_hour = "1h 20m";
+        Serial.printf("<C%s,%s>\n", String(myoungja.bat_percent), String(myoungja.bat_hour));
+        time_old[2] = time_cur;
+    }
 }
 
 void receive_from_opi()

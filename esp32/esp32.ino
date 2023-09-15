@@ -62,8 +62,8 @@ void loop()
     time_cur = millis();
 
     /* 프로토콜 */
-    // opi-esp 패킷 수신 UART0 RX
-    // esp-opi 패킷 전송 UART0 TX
+    receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
+    send_to_opi(); // esp-opi 패킷 전송 UART0 TX
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     /* 기타 동작 */
@@ -89,7 +89,4 @@ void loop()
         // myoungja.co_value = analogRead(MQ_7);
         time_old[2] = time_cur;    
     }
-
-    receive_from_opi();
-    
 }
