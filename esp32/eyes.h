@@ -48,7 +48,7 @@ void initEyes()
 }
 
 
-void displayEyes(EYE_TYPE eyes)
+void displayEyes(int eyes)
 {
     switch(eyes)
     {

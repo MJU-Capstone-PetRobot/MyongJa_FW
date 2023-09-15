@@ -90,51 +90,6 @@ void loop()
         time_old[2] = time_cur;    
     }
 
-    // Serial.read()
-    if (Serial.available() <= 0) 
-    {
-        return;
-    }
-
-    char ch = Serial.read();
-    RCVdata += ch;
-
-    if (ch == '\n') 
-    {
-        if (RCVdata.length() > 0) 
-        {
-            int index;
-            int tmpcnt = 0;
-            String tmpString = RCVdata;
-            tmpString.trim();
-            Serial.print("command in rx, ry, z, rz  ");
-            Serial.println(tmpString);
-
-            while (tmpString.length() > 0) {
-            index = tmpString.indexOf(",");
-            if (index == -1) {
-                CMDdataDEG[tmpcnt] = tmpString;
-                CMDdataDEG[tmpcnt].trim();
-                tmpcnt++;
-                break;
-            }
-
-            CMDdataDEG[tmpcnt] = tmpString.substring(0, index);
-            tmpString = tmpString.substring(index + 1);
-            tmpString.trim();
-            CMDdataDEG[tmpcnt].trim();
-            tmpcnt++;
-            }
-        }
-
-        // 파이썬으로 부터 데이터 받음.
-        myoungja.RPZY[0] = CMDdataDEG[0].toFloat(); //roll
-        myoungja.RPZY[1] = CMDdataDEG[1].toFloat(); //pitch
-        myoungja.RPZY[2] = CMDdataDEG[2].toFloat(); //z-distance
-        myoungja.RPZY[3] = CMDdataDEG[3].toFloat(); //z-axis yaw
-
-        move_neck(myoungja.RPZY[0], myoungja.RPZY[1], myoungja.RPZY[2], myoungja.RPZY[3]);
-
-        RCVdata = "";
-    }
+    receive_from_opi();
+    
 }

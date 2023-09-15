@@ -1,6 +1,3 @@
-String RCVdata;
-String CMDdataDEG[5];
-int CMDdataVal[4] = { 500, 500, 500 ,500};
 float deg2rad = M_PI / 180.0;
 float rad2deg = 180.0 / M_PI;
 float b1[3], b2[3], b3[3], p1[3], p2[3], p3[3];
@@ -125,7 +122,7 @@ void move_neck(float _theta, float _phi, float _z_set, float _yaw)
     L2_a = step_transform(sqrt((l2[0] * l2[0]) + (l2[1] * l2[1]) + (l2[2] * l2[2])));  // convert to steps
     L3_a = step_transform(sqrt((l3[0] * l3[0]) + (l3[1] * l3[1]) + (l3[2] * l3[2])));
 
-    Serial.printf("%d ,%d, %d, %d\n", L1_a, L2_a, L3_a, yaw_step_);
+    Serial.printf(" -> %d ,%d, %d, %d\n", L1_a, L2_a, L3_a, yaw_step_);
 
     ax12a.move(ID1, L1_a);
     ax12a.move(ID2, L2_a);
