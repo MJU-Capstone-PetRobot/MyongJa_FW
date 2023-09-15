@@ -47,7 +47,7 @@ void setup()
     // pinMode(MQ_7, INPUT);
 
     /* 초기화 완료 */
-    neopixelWrite(RGB_BUILTIN,50,50,50);
+    // neopixelWrite(RGB_BUILTIN,50,50,50);
     Serial.println("*************** Setup Done ****************");
 }
 

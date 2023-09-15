@@ -1,9 +1,30 @@
 /* Img, font header files */
-#include "./expressions/normal/DAILY_L.h"
-#include "./expressions/normal/DAILY_R.h"
-#include "./expressions/happy/SMILE.h"
-
 #include <TFT_eSPI.h>
+
+#include "./emo/font.h"
+#include "./emo/close1_L.h"
+#include "./emo/close1_R.h"
+#include "./emo/close2_L.h"
+#include "./emo/close2_R.h"
+#include "./emo/close3_L.h"
+#include "./emo/close3_R.h"
+#include "./emo/close4_L.h"
+#include "./emo/close4_R.h"
+#include "./emo/close5.h"
+#include "./emo/daily_L.h"
+#include "./emo/daily_R.h"
+#include "./emo/angry_L.h"
+#include "./emo/angry_R.h"
+#include "./emo/bot_left_L.h"
+#include "./emo/bot_left_R.h"
+#include "./emo/top_left_L.h"
+#include "./emo/top_left_R.h"
+#include "./emo/top_L.h"
+#include "./emo/top_R.h"
+#include "./emo/sad_L.h"
+#include "./emo/sad_R.h"
+#include "./emo/wink_L.h"
+#include "./emo/wink_R.h"
 
 #define LEFT_EYE  10
 #define RIGHT_EYE 12
@@ -11,8 +32,12 @@
 typedef enum
 {
     NULL_EYE,
-    DAILY_EYE,
-    SMILE_EYE
+    CLOSE_EYE,
+    MOVING_EYE,
+    WINK_EYE,
+    ANGRY_EYE,
+    SAD_EYE,
+    DAILY_EYE
 } EYE_TYPE;
 
 TFT_eSPI tft = TFT_eSPI();
@@ -47,32 +72,284 @@ void initEyes()
     digitalWrite(RIGHT_EYE, 1);
 }
 
+void closeEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(300);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close2_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close2_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close3_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close3_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close4_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close4_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close5);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close5);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close4_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close4_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close3_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close3_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close2_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close2_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(50);
+}
+
+
+void movingEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(200);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, top_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, top_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(200);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, top_left_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, top_left_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(200);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, bot_left_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, bot_left_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(200);
+}
+
+void winkEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(1000);
+}
+
+void angryEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(100);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, angry_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, angry_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(1000);
+}
+
+void sadEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, close1_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(100);
+
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, sad_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, sad_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+
+    delay(1000);
+}
+
+void dailyEyes()
+{
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
+
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+}
 
 void displayEyes(int eyes)
 {
     switch(eyes)
     {
-        case DAILY_EYE:
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, DAILY_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, DAILY_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
+        case CLOSE_EYE:
+            closeEyes();
             break;
-        case SMILE_EYE:
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, SMILE);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, SMILE);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
+        case MOVING_EYE:
+            movingEyes();
+            break;
+        case WINK_EYE:
+            winkEyes();
+            break;            
+        case ANGRY_EYE:
+            angryEyes();
+            break;
+        case SAD_EYE:
+            sadEyes();
+            break;
+        case DAILY_EYE:
+            dailyEyes();
             break;
         default:
 

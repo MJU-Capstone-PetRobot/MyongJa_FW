@@ -10,7 +10,6 @@ typedef struct
     int distance;
     int bat_percent;
     int bat_hour;
-
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
@@ -103,7 +102,7 @@ void receive_from_opi()
             rx_str.replace("E", "");
             rx_str.replace("]", "");
 
-            emo_code = rx_str.toInt();
+            emo_code = (EYE_TYPE)(rx_str.toInt());
             displayEyes(emo_code);
         }
         else
