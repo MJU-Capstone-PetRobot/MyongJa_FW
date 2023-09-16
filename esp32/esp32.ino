@@ -24,7 +24,7 @@ void setup()
     delay(100);
 
     Serial.println("*******************************************");
-    Serial.println("**** [2023-09-13] Hi I'm ESP32_M board ****");
+    Serial.println("**** [2023-09-16] Hi I'm ESP32_M board ****");
     Serial.println("*******************************************");
     
     /* 목 서보모터 통신 */
@@ -57,7 +57,6 @@ EYE_TYPE eye_cur = DAILY_EYE;
 uint16_t mq_7_value = 0;
 void loop() 
 {
-
     // 센서 값 읽기
     time_cur = millis();
 
@@ -67,9 +66,7 @@ void loop()
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     /* 기타 동작 */
-    // 디스플레이 동작 SPI TX
     // 가스, 터치 센서 읽기 ADC
-    // 목 제어 UART1 TX
     // 초음파 센서 수신 UART3 RX
 
     if((time_cur - time_old[0]) > 10)

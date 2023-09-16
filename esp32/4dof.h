@@ -116,16 +116,14 @@ int step_transform(float length)
 void move_neck(float _theta, float _phi, float _z_set, float _yaw)
 {
     create_l_vectors(_theta, _phi, _z_set); // create the end-effector vectors
-    int yaw_step_ = map(_yaw, -150, 150, 0, 1023);
+    yaw_step = map(_yaw, -150, 150, 0, 1023);
     
     L1_a = step_transform(sqrt((l1[0] * l1[0]) + (l1[1] * l1[1]) + (l1[2] * l1[2])));  // norm and
     L2_a = step_transform(sqrt((l2[0] * l2[0]) + (l2[1] * l2[1]) + (l2[2] * l2[2])));  // convert to steps
     L3_a = step_transform(sqrt((l3[0] * l3[0]) + (l3[1] * l3[1]) + (l3[2] * l3[2])));
 
-    Serial.printf(" -> %d ,%d, %d, %d\n", L1_a, L2_a, L3_a, yaw_step_);
-
     ax12a.move(ID1, L1_a);
     ax12a.move(ID2, L2_a);
     ax12a.move(ID3, L3_a);
-    ax12a.move(ID4, yaw_step_);
+    ax12a.move(ID4, yaw_step);
 }

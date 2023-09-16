@@ -53,7 +53,7 @@ void send_to_opi()
         // 배터리 잔량
         myoungja.bat_percent = "90%";
         myoungja.bat_hour = "1h 20m";
-        Serial.printf("<C%s,%s>\n", String(myoungja.bat_percent), String(myoungja.bat_hour));
+        Serial.printf("<B%s,%s>\n", String(myoungja.bat_percent), String(myoungja.bat_hour));
         time_old[2] = time_cur;
     }
 }
@@ -72,24 +72,21 @@ void receive_from_opi()
     rx_str += ch;
     rx_str.trim(); // delete '\n'
 
-    if(ch == '[') sof = true;
-    if((sof == true) && (ch == ']')) eof = true;
+    if(ch == '(') sof = true;
+    if((sof == true) && (ch == ')')) eof = true;
 
     if(sof && eof) // 전체 패킷 수신 완료
     {
         Serial.print("[OPI->ESP] ");
-        Serial.println(rx_str);
+        Serial.print(rx_str + " ");
 
-        if(rx_str[1] == 'N')
+        if(rx_str[1] == 'N') // 목 제어 패킷
         {
             int index;
             int cnt = 0;
-            rx_str.replace("[", ""); // delete '['
+            rx_str.replace("(", ""); // delete '('
             rx_str.replace("N", ""); // delete 'N'
-            rx_str.replace("]", ""); // delete ']'
-
-            Serial.print("[NECK] [R,P,Z,Y] ");
-            Serial.printf("[%s]", rx_str);
+            rx_str.replace(")", ""); // delete ')'
 
             while(cnt != 4)
             {
@@ -126,17 +123,20 @@ void receive_from_opi()
                 myoungja.RPZY[3] = neck_cmd_str[3].toFloat(); //z-axis yaw
 
                 move_neck(myoungja.RPZY[0], myoungja.RPZY[1], myoungja.RPZY[2], myoungja.RPZY[3]);
+                Serial.printf("[NECK] %d, %d, %d, %d\n", L1_a, L2_a, L3_a, yaw_step);
             }
         }
-        else if(rx_str[1] == 'E')
+        else if(rx_str[1] == 'E') // 감정 표현 패킷 
         {
             int emo_code;
-            rx_str.replace("[", "");
+            rx_str.replace("(", "");
             rx_str.replace("E", "");
-            rx_str.replace("]", "");
+            rx_str.replace(")", "");
 
             emo_code = (EYE_TYPE)(rx_str.toInt());
             displayEyes(emo_code);
+
+            Serial.printf("[EMO] %d\n", emo_code);
         }
         else
         {
