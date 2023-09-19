@@ -35,7 +35,7 @@ void send_to_opi()
     if((time_cur - time_old[0]) > 100)
     {
         // 초음파 센서
-        myoungja.distance = 1500;
+        // myoungja.distance = 1500;
         Serial.printf("<D%s>\n", String(myoungja.distance));
         time_old[0] = time_cur;
     }
@@ -69,7 +69,7 @@ void receive_from_opi()
     static bool eof = false;
     static bool error = false;
 
-    rx_str += ch;
+    rx_str += ch; // (N1,1,80,1)
     rx_str.trim(); // delete '\n'
 
     if(ch == '(') sof = true;
@@ -152,4 +152,10 @@ void receive_from_opi()
 void receive_from_esp_s()
 {
 
+}
+
+void receive_from_ultrasonic()
+{
+    // TODO
+    // myoungja.distance = 1500;
 }
