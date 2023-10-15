@@ -6,7 +6,6 @@
 #define ID4            4
 
 #define TOUCH           (16)
-#define MQ_7            (17)
 
 #include <AX12A.h>
 #include <math.h>
@@ -39,12 +38,12 @@ void setup()
     delay(100);
     displayEyes(DAILY_EYE);
 
-    /* TODO : 초음파 센서 통신 */ 
-    // Serial2.begin(1000000, SERIAL_8N1, 41, 42); // UART2 RX(41), TX(42)
+    /* MQ-7 일산화탄소 센서 */
+    init_mq7();
+
 
     /* 아날로그 핀 초기화 */
     // pinMode(TOUCH, INPUT);
-    // pinMode(MQ_7, INPUT);
 
     /* 초기화 완료 */
     // neopixelWrite(RGB_BUILTIN,50,50,50);
@@ -64,26 +63,4 @@ void loop()
     receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
     send_to_opi(); // esp-opi 패킷 전송 UART0 TX
     // esp_s-esp_m 패킷 수신 UART2 RX
-
-    /* 기타 동작 */
-    // 가스, 터치 센서 읽기 ADC
-    // 초음파 센서 수신 UART3 RX
-
-    if((time_cur - time_old[0]) > 10)
-    {
-        // myoungja.touch = analogRead(TOUCH);
-        time_old[0] = time_cur;
-    }
-
-    if((time_cur - time_old[1]) > 500)
-    {
-        // displayEyes(myoungja.emo_code);
-        time_old[1] = time_cur;
-    }
-
-    if((time_cur - time_old[2]) > 1000)
-    {
-        // myoungja.co_value = analogRead(MQ_7);
-        time_old[2] = time_cur;    
-    }
 }
