@@ -1,4 +1,5 @@
-#include <string>
+#include <string.h>
+#include "mq7.h"
 
 typedef struct
 {
@@ -7,7 +8,7 @@ typedef struct
 
     bool touch;
     bool touch_prev;
-    int co_value;
+    int co_ppm;
     int distance;
     String bat_percent;
     String bat_hour;
@@ -43,17 +44,19 @@ void send_to_opi()
     if((time_cur - time_old[1]) > 1000)
     {
         // CO 농도
-        myoungja.co_value = 200;
-        Serial.printf("<C%s>\n", String(myoungja.co_value));
-        time_old[1] = time_cur;
-    }
+        myoungja.co_ppm = read_mq7();
+        Serial.printf("<C%s>\n", String(myoungja.co_ppm));
 
-    if((time_cur - time_old[2]) > 1000)
-    {
         // 배터리 잔량
         myoungja.bat_percent = "90%";
         myoungja.bat_hour = "1h 20m";
         Serial.printf("<B%s,%s>\n", String(myoungja.bat_percent), String(myoungja.bat_hour));
+
+        time_old[1] = time_cur;
+    }
+
+    if((time_cur - time_old[2]) > 5000)
+    {
         time_old[2] = time_cur;
     }
 }
