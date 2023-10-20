@@ -1,6 +1,9 @@
+#ifndef _EYES_H_
+#define _EYES_H_
+
 /* Img, font header files */
 #include <TFT_eSPI.h>
-
+#include "apps.h"
 // #include "./emo/bat_1.h"
 // #include "./emo/bat_2.h"
 // #include "./emo/danger.h"
@@ -32,18 +35,7 @@
 #define LEFT_EYE  10
 #define RIGHT_EYE 12
 
-typedef enum
-{
-    NULL_EYE,
-    CLOSE_EYE,
-    MOVING_EYE,
-    WINK_EYE,
-    ANGRY_EYE,
-    SAD_EYE,
-    DAILY_EYE,
-    BAT_EYE,
-    DANGER_EYE
-} EYE_TYPE;
+
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite img = TFT_eSprite(&tft);
@@ -103,20 +95,13 @@ void closeEyes()
         if(state == 10)
         {
           state = 0;
+          myoungja.emo_code = DAILY_EYE;
         }
 
       switch(state)
       {
         case 0 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, daily_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, daily_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
+            dailyEyes();
             break;
         case 1 :
             digitalWrite(LEFT_EYE, 0);
@@ -230,21 +215,22 @@ void movingEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-    if (state == 0 && (currentMillis - previousMillis) >= 2000)
+    if ((currentMillis - previousMillis) >= 2000)
     {
         previousMillis = currentMillis;
-        state = 1;
-    }
-
-    else if (state == 1 && (currentMillis - previousMillis) >= 2000)
-    {
-        previousMillis = currentMillis;
-        state = 2;
+        state++;
+        if (state == 4)
+        {
+            state = 0;
+        }
     }
 
     switch(state)
     {
         case 0 :
+            dailyEyes();
+            break;
+        case 1 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, top_L);
             img.pushSprite(0, 0);
@@ -254,8 +240,8 @@ void movingEyes()
             img.pushImage(0, 0, 240, 240, top_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
-        case 1 :
+            break;
+        case 2 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, top_left_L);
             img.pushSprite(0, 0);
@@ -265,8 +251,8 @@ void movingEyes()
             img.pushImage(0, 0, 240, 240, top_left_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
-        case 2 :
+            break;
+        case 3 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, bot_left_L);
             img.pushSprite(0, 0);
@@ -276,6 +262,9 @@ void movingEyes()
             img.pushImage(0, 0, 240, 240, bot_left_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
+            break;
+        default :
+            break;
     }
 }
 
@@ -298,15 +287,23 @@ void angryEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-    if (state == 0 && (currentMillis - previousMillis) >= 200)
+    if ((currentMillis - previousMillis) >= 200)
     {
         previousMillis = currentMillis;
-        state = 1;
+        state++;
+        if (state == 3)
+        {
+            state = 0;
+        }
     }
 
     switch(state)
     {
         case 0 :
+            dailyEyes();
+            break;
+
+        case 1 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
             img.pushSprite(0, 0);
@@ -316,8 +313,9 @@ void angryEyes()
             img.pushImage(0, 0, 240, 240, close1_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
+            break;
 
-        case 1 :
+        case 2 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, angry_L);
             img.pushSprite(0, 0);
@@ -327,6 +325,9 @@ void angryEyes()
             img.pushImage(0, 0, 240, 240, angry_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
+            break;
+        default :
+            break;
     }
 
 }
@@ -337,15 +338,22 @@ void sadEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-    if (state == 0 && (currentMillis - previousMillis) >= 100)
+    if ((currentMillis - previousMillis) >= 100)
     {
         previousMillis = currentMillis;
-        state = 1;
+        state++;
+        if (state == 3)
+        {
+            state = 0;
+        }
     }
 
     switch(state)
     {
         case 0 :
+            dailyEyes();
+            break;
+        case 1 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
             img.pushSprite(0, 0);
@@ -355,8 +363,8 @@ void sadEyes()
             img.pushImage(0, 0, 240, 240, close1_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
-        case 1 :
+            break;
+        case 2 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, sad_L);
             img.pushSprite(0, 0);
@@ -366,6 +374,9 @@ void sadEyes()
             img.pushImage(0, 0, 240, 240, sad_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
+            break;
+        default :
+            break;
     }
 
 }
@@ -530,3 +541,5 @@ void displayEyes(int eyes)
             break;
     }
 }
+
+#endif

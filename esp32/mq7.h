@@ -1,3 +1,6 @@
+#ifndef _MQ7_H_
+#define _MQ7_H_
+
 #include <MQUnifiedsensor.h>
 
 /************************Hardware Related Macros************************************/
@@ -76,3 +79,5 @@ int read_mq7()
 
     return co_ppm;
 }
+
+#endif

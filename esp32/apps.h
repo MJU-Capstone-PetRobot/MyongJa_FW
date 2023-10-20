@@ -1,5 +1,9 @@
 #include <string.h>
 #include "mq7.h"
+#include "eyes.h"
+
+#ifndef _APPS_H_
+#define _APPS_H_
 
 typedef struct
 {
@@ -15,6 +19,19 @@ typedef struct
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
+
+typedef enum
+{
+    NULL_EYE,
+    CLOSE_EYE,
+    MOVING_EYE,
+    WINK_EYE,
+    ANGRY_EYE,
+    SAD_EYE,
+    DAILY_EYE,
+    BAT_EYE,
+    DANGER_EYE
+} EYE_TYPE;
 
 void init_default_value()
 {
@@ -159,3 +176,5 @@ void receive_from_ultrasonic()
     // TODO
     // myoungja.distance = 1500;
 }
+
+#endif 

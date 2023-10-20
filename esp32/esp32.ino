@@ -71,4 +71,15 @@ void loop()
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     displayEyes(myoungja.emo_code);
+
+    unsigned long currentMillis = millis();
+    static unsigned long previousMillis = 0;
+    static int state = 0 ;
+
+    if ((currentMillis - previousMillis) >= 10000)
+    {
+      previousMillis = currentMillis;
+      myoungja.emo_code = CLOSE_EYE;
+    }
+
 }
