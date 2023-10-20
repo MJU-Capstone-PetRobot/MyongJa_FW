@@ -38,6 +38,7 @@ void setup()
     initEyes();
     delay(100);
     displayEyes(DAILY_EYE);
+    myoungja.emo_code_prev = DAILY_EYE;
 
     /* TODO : 초음파 센서 통신 */ 
     // Serial2.begin(1000000, SERIAL_8N1, 41, 42); // UART2 RX(41), TX(42)
@@ -71,6 +72,7 @@ void loop()
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     displayEyes(myoungja.emo_code);
+    // myoungja.emo_code_prev = DAILY_EYE;
 
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;

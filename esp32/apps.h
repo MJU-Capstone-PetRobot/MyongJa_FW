@@ -9,6 +9,7 @@ typedef struct
 {
     float RPZY[4];
     int emo_code;
+    int emo_code_prev;
 
     bool touch;
     bool touch_prev;
@@ -154,6 +155,8 @@ void receive_from_opi()
 
             myoungja.emo_code = (EYE_TYPE)(rx_str.toInt());
             Serial.printf("[EMO] %d\n", myoungja.emo_code);
+            
+            myoungja.emo_code_prev = myoungja.emo_code;
         }
         else
         {

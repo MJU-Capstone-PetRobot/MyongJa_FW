@@ -4,9 +4,9 @@
 /* Img, font header files */
 #include <TFT_eSPI.h>
 #include "apps.h"
-// #include "./emo/bat_1.h"
-// #include "./emo/bat_2.h"
-// #include "./emo/danger.h"
+#include "./emo/bat_1.h"
+#include "./emo/bat_2.h"
+#include "./emo/danger.h"
 #include "./emo/font.h"
 #include "./emo/close1_L.h"
 #include "./emo/close1_R.h"
@@ -84,6 +84,7 @@ void dailyEyes()
 
 void closeEyes()
 {
+  // 시작할 때 이전의 EMOCODE를 받아야하나 ? 
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
     static int state = 0;
@@ -95,7 +96,7 @@ void closeEyes()
         if(state == 10)
         {
           state = 0;
-          myoungja.emo_code = DAILY_EYE;
+          myoungja.emo_code = myoungja.emo_code_prev;
         }
 
       switch(state)
@@ -381,133 +382,61 @@ void sadEyes()
 
 }
 
-// void batteryEyes()
-// {
-//     unsigned long currentMillis = millis();
-//     static unsigned long previousMillis = 0;
-//     static int state = 0 ;
+void batteryEyes()
+{
+    unsigned long currentMillis = millis();
+    static unsigned long previousMillis = 0;
+    static int state = 0 ;
 
-//       if (state == 0 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 1;
-//       }
+      if ((currentMillis - previousMillis) >= 100)
+      {
+          previousMillis = currentMillis;
+          state++;
+          if (state == 2)
+          {
+            state = 0;
+          }
+      }
 
-//       else if (state == 1 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 2;
-//       }
+    switch(state)
+    {
+        case 0 :
+            digitalWrite(LEFT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, bat_1);
+            img.pushSprite(0, 0);
+            digitalWrite(LEFT_EYE, 1);
 
-//       else if (state == 2 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 3;
-//       }
+            digitalWrite(RIGHT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, bat_1);
+            img.pushSprite(0, 0);
+            digitalWrite(RIGHT_EYE, 1);
+            break;
+        case 1 :
+            digitalWrite(LEFT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, bat_2);
+            img.pushSprite(0, 0);
+            digitalWrite(LEFT_EYE, 1);
 
-//       else if (state == 3 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 4;
-//       }
+            digitalWrite(RIGHT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, bat_2);
+            img.pushSprite(0, 0);
+            digitalWrite(RIGHT_EYE, 1);
+            break;
+    }
+}
 
-//       else if (state == 4 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 5;
-//       }
+void dangerEyes()
+{
+  digitalWrite(LEFT_EYE, 0);
+  img.pushImage(0, 0, 240, 240, danger);
+  img.pushSprite(0, 0);
+  digitalWrite(LEFT_EYE, 1);
 
-//       else if (state == 5 && (currentMillis - previousMillis) >= 100)
-//       {
-//           previousMillis = currentMillis;
-//           state = 0;
-//       }
-
-//     switch(state)
-//     {
-//         case 0 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-
-//         case 1 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-
-//         case 2 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-
-//         case 3 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-
-//         case 4 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_1);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-
-//         case 5 :
-//             digitalWrite(LEFT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(LEFT_EYE, 1);
-
-//             digitalWrite(RIGHT_EYE, 0);
-//             img.pushImage(0, 0, 240, 240, bat_2);
-//             img.pushSprite(0, 0);
-//             digitalWrite(RIGHT_EYE, 1);
-//     }
-
-// }
-
-// void dangerEyes()
-// {
-
-//   digitalWrite(LEFT_EYE, 0);
-//   img.pushImage(0, 0, 240, 240, danger);
-//   img.pushSprite(0, 0);
-//   digitalWrite(LEFT_EYE, 1);
-
-//   digitalWrite(RIGHT_EYE, 0);
-//   img.pushImage(0, 0, 240, 240, danger);
-//   img.pushSprite(0, 0);
-//   digitalWrite(RIGHT_EYE, 1);
-
-// }
+  digitalWrite(RIGHT_EYE, 0);
+  img.pushImage(0, 0, 240, 240, danger);
+  img.pushSprite(0, 0);
+  digitalWrite(RIGHT_EYE, 1);
+}
 
 void displayEyes(int eyes)
 {
@@ -531,12 +460,12 @@ void displayEyes(int eyes)
         case DAILY_EYE:
             dailyEyes();
             break;
-        // case BAT_EYE:
-        //     batteryEyes();
-        //     break;
-        // case DANGER_EYE:
-        //     dangerEyes();
-        //     break;
+        case BAT_EYE:
+            batteryEyes();
+            break;
+        case DANGER_EYE:
+            dangerEyes();
+            break;
         default:
             break;
     }
