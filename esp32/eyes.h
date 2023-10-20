@@ -1,9 +1,10 @@
 /* Img, font header files */
 #include <TFT_eSPI.h>
 
-#include "./emo/font.h"
 // #include "./emo/bat_1.h"
 // #include "./emo/bat_2.h"
+// #include "./emo/danger.h"
+#include "./emo/font.h"
 #include "./emo/close1_L.h"
 #include "./emo/close1_R.h"
 #include "./emo/close2_L.h"
@@ -15,7 +16,6 @@
 #include "./emo/close5.h"
 #include "./emo/daily_L.h"
 #include "./emo/daily_R.h"
-// #include "./emo/danger.h"
 #include "./emo/angry_L.h"
 #include "./emo/angry_R.h"
 #include "./emo/bot_left_L.h"
@@ -94,9 +94,9 @@ void closeEyes()
 {
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
-    static int state = 0 ;
+    static int state = 0;
 
-    if ((currentMillis - previousMillis) >= 1000)
+    if ((currentMillis - previousMillis) >= 100)
     {
         previousMillis = currentMillis;
         state++;
@@ -108,16 +108,16 @@ void closeEyes()
       switch(state)
       {
         case 0 :
-          digitalWrite(LEFT_EYE, 0);
-          img.pushImage(0, 0, 240, 240, daily_L);
-          img.pushSprite(0, 0);
-          digitalWrite(LEFT_EYE, 1);
+            digitalWrite(LEFT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, daily_L);
+            img.pushSprite(0, 0);
+            digitalWrite(LEFT_EYE, 1);
 
-          digitalWrite(RIGHT_EYE, 0);
-          img.pushImage(0, 0, 240, 240, daily_R);
-          img.pushSprite(0, 0);
-          digitalWrite(RIGHT_EYE, 1);
-
+            digitalWrite(RIGHT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, daily_R);
+            img.pushSprite(0, 0);
+            digitalWrite(RIGHT_EYE, 1);
+            break;
         case 1 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
@@ -128,7 +128,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close1_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 2 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close2_L);
@@ -139,7 +139,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close2_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 3 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close3_L);
@@ -150,7 +150,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close3_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 4 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close4_L);
@@ -161,7 +161,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close4_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 5 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close5);
@@ -172,7 +172,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close5);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 6 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close4_L);
@@ -183,7 +183,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close4_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 7 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close3_L);
@@ -194,7 +194,7 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close3_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
+            break;
         case 8 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close2_L);
@@ -205,8 +205,8 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close2_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-
-          case 9 :
+            break;
+        case 9 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
             img.pushSprite(0, 0);
@@ -216,68 +216,11 @@ void closeEyes()
             img.pushImage(0, 0, 240, 240, close1_R);
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
-      }
-
-      Serial.printf("close state %d \n", state);
+            break;
+        default:
+            break;
+        }
     }
-/*
-    else if (state == 1 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 2;
-    }
-
-    else if (state == 2 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 3;
-    }
-
-    else if (state == 3 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 4;
-    }
-
-    // 다시 회귀해야하는디 ?
-
-    else if (state == 4 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 5;
-    }
-
-    else if (state == 5 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 6;
-    }
-
-    else if (state == 6 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 7;
-    }
-
-    else if (state == 7 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 8;
-    }
-
-    else if (state == 8 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 9;
-    }
-
-    else if (state == 9 && (currentMillis - previousMillis) >= 1000)
-    {
-        previousMillis = currentMillis;
-        state = 0;
-    }
-*/
-
 }
 
 
@@ -577,15 +520,12 @@ void displayEyes(int eyes)
         case DAILY_EYE:
             dailyEyes();
             break;
-
         // case BAT_EYE:
         //     batteryEyes();
         //     break;
-
         // case DANGER_EYE:
         //     dangerEyes();
         //     break;
-
         default:
             break;
     }

@@ -131,15 +131,12 @@ void receive_from_opi()
         }
         else if(rx_str[1] == 'E') // 감정 표현 패킷 
         {
-            int emo_code;
             rx_str.replace("(", "");
             rx_str.replace("E", "");
             rx_str.replace(")", "");
 
-            emo_code = (EYE_TYPE)(rx_str.toInt());
-            displayEyes(emo_code);
-
-            Serial.printf("[EMO] %d\n", emo_code);
+            myoungja.emo_code = (EYE_TYPE)(rx_str.toInt());
+            Serial.printf("[EMO] %d\n", myoungja.emo_code);
         }
         else
         {

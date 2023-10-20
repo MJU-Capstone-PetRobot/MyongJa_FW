@@ -56,27 +56,19 @@ uint32_t time_old[5] = {0};
 EYE_TYPE eye_cur = DAILY_EYE;
 uint16_t mq_7_value = 0;
 
+uint32_t currentMillis = 0;
+static uint32_t previousMillis = 0;
+static int state = 0;
+
 void loop() 
 {
     // 센서 값 읽기
-//    time_cur = millis();
+    // time_cur = millis();
 
     /* 프로토콜 */
     receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
-    // send_to_opi(); // esp-opi 패킷 전송 UART0 TX
+    send_to_opi(); // esp-opi 패킷 전송 UART0 TX
     // esp_s-esp_m 패킷 수신 UART2 RX
 
-    // displayEyes(myoungja.emo_code);
-    closeEyes();
-
-    //  unsigned long currentMillis = millis();
-    //  static unsigned long previousMillis = 0;
-    
-    //  if ((currentMillis - previousMillis) >= 10000)
-    //  {
-    //    previousMillis = currentMillis;
-    //    displayEyes(CLOSE_EYE);
-    //  }
-
-//  displayEyes(BAT_EYE);
+    displayEyes(myoungja.emo_code);
 }
