@@ -6,6 +6,7 @@
 #define ID4            4
 
 #define TOUCH           (16)
+#define MQ_7            (17)
 
 #include <AX12A.h>
 #include <math.h>
@@ -38,12 +39,12 @@ void setup()
     delay(100);
     displayEyes(DAILY_EYE);
 
-    /* MQ-7 일산화탄소 센서 */
-    init_mq7();
-
+    /* TODO : 초음파 센서 통신 */ 
+    // Serial2.begin(1000000, SERIAL_8N1, 41, 42); // UART2 RX(41), TX(42)
 
     /* 아날로그 핀 초기화 */
     // pinMode(TOUCH, INPUT);
+    // pinMode(MQ_7, INPUT);
 
     /* 초기화 완료 */
     // neopixelWrite(RGB_BUILTIN,50,50,50);
@@ -54,13 +55,28 @@ uint32_t time_cur = 0;
 uint32_t time_old[5] = {0};
 EYE_TYPE eye_cur = DAILY_EYE;
 uint16_t mq_7_value = 0;
+
 void loop() 
 {
     // 센서 값 읽기
-    time_cur = millis();
+//    time_cur = millis();
 
     /* 프로토콜 */
     receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
-    send_to_opi(); // esp-opi 패킷 전송 UART0 TX
+    // send_to_opi(); // esp-opi 패킷 전송 UART0 TX
     // esp_s-esp_m 패킷 수신 UART2 RX
+
+    // displayEyes(myoungja.emo_code);
+    closeEyes();
+
+    //  unsigned long currentMillis = millis();
+    //  static unsigned long previousMillis = 0;
+    
+    //  if ((currentMillis - previousMillis) >= 10000)
+    //  {
+    //    previousMillis = currentMillis;
+    //    displayEyes(CLOSE_EYE);
+    //  }
+
+//  displayEyes(BAT_EYE);
 }
