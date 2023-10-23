@@ -64,6 +64,20 @@ void processGPSData() {
     }
 }
 
+void displayBatteryDuration(float watts) {
+    float batteryCapacityWh = 36.0 * 15.0; // 36V, 15Ah
+    float batteryDurationHours = batteryCapacityWh / watts; // hours
+
+    int hours = (int)batteryDurationHours;
+    int minutes = (batteryDurationHours - hours) * 60;
+
+    //Serial.printf("Battery can last : %dh %dm\n", hours, minutes);
+    String duration = String(hours) + "h " + String(minutes) + "m";
+    return duration;
+
+}
+
+
 void processUltrasonicData(SoftwareSerial& serial, int sensorNumber) {
     static int i = 1;
     static uint8_t data_buf[4] = {};
@@ -92,21 +106,29 @@ void processUltrasonicData(SoftwareSerial& serial, int sensorNumber) {
     }
 }
 
+
+void sendToSerial1(const char* prefix, String data) {
+    char buffer[150];
+    sprintf(buffer, "*%s%s*\n", prefix, data.c_str());
+    Serial1.println(buffer);
+}
+
 void loop() {
     processGPSData();
     
     float volts, amps, watts;
     mySensor.readInstantaneous(&volts, &amps, &watts);
+    String batteryDuration = getBatteryDuration(watts);
     float batteryPercentage = calculateBatteryPercentage(volts);
-    Serial.printf("Battery Percentage: %.2f%%\n", batteryPercentage);
 
     processUltrasonicData(ultrasonic1, 1);
     processUltrasonicData(ultrasonic2, 2);
 
-    char setbuffer[200];
-    sprintf(setbuffer, "Battery: %.2f%%, GPS Lat: %.6f, GPS Lon: %.6f, Ultrasonic1: %d cm, Ultrasonic2: %d cm",
-            batteryPercentage, gps.location.lat(), gps.location.lng(), distance1, distance2);
-    Serial1.println(setbuffer);
+    // Sending data according to the protocol:
+    sendToSerial1("D", String(distance1));
+    sendToSerial1("D", String(distance2));
+    sendToSerial1("B", String(batteryPercentage) + "% " + batteryDuration);
+    sendToSerial1("G", String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6));
 
     delay(250);
 }
