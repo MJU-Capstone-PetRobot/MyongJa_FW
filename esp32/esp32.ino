@@ -44,7 +44,7 @@ void setup()
     // Serial2.begin(1000000, SERIAL_8N1, 41, 42); // UART2 RX(41), TX(42)
 
     /* 아날로그 핀 초기화 */
-    // pinMode(TOUCH, INPUT);
+    pinMode(TOUCH, INPUT);
     // pinMode(MQ_7, INPUT);
 
     /* 초기화 완료 */
@@ -72,8 +72,7 @@ void loop()
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     displayEyes(myoungja.emo_code);
-    // myoungja.emo_code_prev = DAILY_EYE;
-
+/*
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
     static int state = 0 ;
@@ -83,5 +82,9 @@ void loop()
       previousMillis = currentMillis;
       myoungja.emo_code = CLOSE_EYE;
     }
+
+    
+*/
+    receive_from_touch();
 
 }

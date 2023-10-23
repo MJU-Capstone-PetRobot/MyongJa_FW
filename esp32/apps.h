@@ -171,7 +171,7 @@ void receive_from_opi()
 
 void receive_from_esp_s()
 {
-
+    //
 }
 
 void receive_from_ultrasonic()
@@ -180,4 +180,16 @@ void receive_from_ultrasonic()
     // myoungja.distance = 1500;
 }
 
+void receive_from_touch()
+{
+    if (digitalRead(TOUCH) == HIGH)
+    {
+      myoungja.emo_code = WINK_EYE;
+      //Serial.printf("touch! \n");
+    }
+    else
+    {
+      myoungja.emo_code = myoungja.emo_code_prev;
+    }
+}
 #endif 
