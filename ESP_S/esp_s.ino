@@ -106,7 +106,6 @@ void processUltrasonicData(SoftwareSerial& serial, int sensorNumber) {
     }
 }
 
-
 void sendToSerial1(const char* prefix, String data) {
     char buffer[150];
     sprintf(buffer, "*%s%s*\n", prefix, data.c_str());
@@ -127,7 +126,8 @@ void loop() {
     // Sending data according to the protocol:
     sendToSerial1("D", String(distance1));
     sendToSerial1("D", String(distance2));
-    sendToSerial1("B", String(batteryPercentage) + "% " + batteryDuration);
+    sendToSerial1("B", String(batteryPercentage) + "%");
+    sendToSerial1("BD", batteryDuration);
     sendToSerial1("G", String(gps.location.lat(), 6) + "," + String(gps.location.lng(), 6));
 
     delay(250);
