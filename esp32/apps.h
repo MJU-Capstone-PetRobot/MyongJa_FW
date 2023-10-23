@@ -174,21 +174,25 @@ void receive_from_esp_s()
     //
 }
 
-void receive_from_ultrasonic()
-{
-    // TODO
-    // myoungja.distance = 1500;
-}
-
 void receive_from_touch()
 {
     if (digitalRead(TOUCH) == HIGH)
     {
-      myoungja.emo_code = WINK_EYE;
-      //Serial.printf("touch! \n");
+      myoungja.touch = true;
     }
     else
     {
+      myoungja.touch = false;
+    }
+
+    if (myoungja.touch_prev == false && myoungja.touch == true)
+    {
+      myoungja.touch_prev = myoungja.touch;
+      myoungja.emo_code = WINK_EYE;
+    }
+    else if (myoungja.touch_prev == true && myoungja.touch == false)
+    {
+      myoungja.touch_prev = myoungja.touch;
       myoungja.emo_code = myoungja.emo_code_prev;
     }
 }

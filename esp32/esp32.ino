@@ -45,6 +45,7 @@ void setup()
 
     /* 아날로그 핀 초기화 */
     pinMode(TOUCH, INPUT);
+    myoungja.touch_prev = false;
     // pinMode(MQ_7, INPUT);
 
     /* 초기화 완료 */
@@ -63,16 +64,11 @@ static int state = 0;
 
 void loop() 
 {
-    // 센서 값 읽기
-    // time_cur = millis();
-
     /* 프로토콜 */
     receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
     send_to_opi(); // esp-opi 패킷 전송 UART0 TX
     // esp_s-esp_m 패킷 수신 UART2 RX
 
-    displayEyes(myoungja.emo_code);
-/*
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
     static int state = 0 ;
@@ -83,8 +79,7 @@ void loop()
       myoungja.emo_code = CLOSE_EYE;
     }
 
-    
-*/
+    displayEyes(myoungja.emo_code);
     receive_from_touch();
 
 }
