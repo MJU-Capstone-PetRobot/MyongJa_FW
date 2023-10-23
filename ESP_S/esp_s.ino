@@ -1,9 +1,12 @@
 #include <Wire.h>
 #include "SparkFun_ACS37800_Arduino_Library.h"
 #include <TinyGPS++.h>
+#include <SoftwareSerial.h>
 
 ACS37800 mySensor;
 TinyGPSPlus gps;
+SoftwareSerial ultrasonic1(41, 42); // RX, TX for Ultrasonic 1
+SoftwareSerial ultrasonic2(2, 1);  // RX, TX for Ultrasonic 2
 
 void setup() {
     Serial.begin(115200); 
@@ -38,8 +41,8 @@ void setupACS37800() {
 }
 
 void setupUltrasonicSensors() {
-    Serial1.begin(9600, SERIAL_8N1, 41, 42); // Ultrasonic 1
-    Serial3.begin(9600, SERIAL_8N1, 2, 1);  // Ultrasonic 2
+    ultrasonic1.begin(9600);
+    ultrasonic2.begin(9600);
 }
 
 float calculateBatteryPercentage(float volts) {
@@ -61,7 +64,7 @@ void processGPSData() {
     }
 }
 
-void processUltrasonicData(HardwareSerial& serial, int sensorNumber) {
+void processUltrasonicData(SoftwareSerial& serial, int sensorNumber) {
     static int i = 1;
     static uint8_t data_buf[4] = {};
     uint8_t ch;
@@ -76,7 +79,7 @@ void processUltrasonicData(HardwareSerial& serial, int sensorNumber) {
                 cs = (data_buf[0] + data_buf[1] + data_buf[2]) & 0x00ff;
                 if(cs == data_buf[3]) {
                     distance = (data_buf[1] << 8) + data_buf[2];
-                    Serial.printf("%d distance : %d cm\n", sensorNumber, distance/10);
+                    Serial.printf("Ultrasonic %d distance : %d cm\n", sensorNumber, distance/10);
                 }
                 memset(data_buf, 0, sizeof(data_buf));
                 i = 1;
@@ -97,11 +100,12 @@ void loop() {
     float batteryPercentage = calculateBatteryPercentage(volts);
     Serial.printf("Battery Percentage: %.2f%%\n", batteryPercentage);
 
-    processUltrasonicData(Serial1, 1);
-    processUltrasonicData(Serial3, 2);
+    processUltrasonicData(ultrasonic1, 1);
+    processUltrasonicData(ultrasonic2, 2);
 
-    char setbuffer[100];
-    sprintf(setbuffer, "Battery: %.2f%%, GPS Lat: %.6f, GPS Lon: %.6f", batteryPercentage, gps.location.lat(), gps.location.lng());
+    char setbuffer[200];
+    sprintf(setbuffer, "Battery: %.2f%%, GPS Lat: %.6f, GPS Lon: %.6f, Ultrasonic1: %d cm, Ultrasonic2: %d cm",
+            batteryPercentage, gps.location.lat(), gps.location.lng(), distance1, distance2);
     Serial1.println(setbuffer);
 
     delay(250);
