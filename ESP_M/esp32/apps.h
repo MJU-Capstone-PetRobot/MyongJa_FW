@@ -54,7 +54,8 @@ void send_to_opi()
     if((time_cur - time_old[0]) > 100)
     {
         // 초음파 센서
-        // myoungja.distance = 1500;
+        myoungja.distance++;
+        if(myoungja.distance == 4500) myoungja.distance = 0;
         Serial.printf("<D%s>\n", String(myoungja.distance));
         time_old[0] = time_cur;
     }

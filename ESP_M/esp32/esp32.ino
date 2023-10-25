@@ -40,10 +40,10 @@ void setup()
     displayEyes(DAILY_EYE);
     myoungja.emo_code_prev = DAILY_EYE;
 
-    /* TODO : 초음파 센서 통신 */ 
-    // Serial2.begin(1000000, SERIAL_8N1, 41, 42); // UART2 RX(41), TX(42)
+    /* MQ-7 일산화탄소 센서 */
+    init_mq7();
 
-    /* 아날로그 핀 초기화 */
+    /* 터치 센서 핀 초기화 */
     pinMode(TOUCH, INPUT);
     myoungja.touch_prev = false;
     // pinMode(MQ_7, INPUT);
