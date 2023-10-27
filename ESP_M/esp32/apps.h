@@ -31,7 +31,8 @@ typedef enum
     SAD_EYE,
     DAILY_EYE,
     BAT_EYE,
-    DANGER_EYE
+    DANGER_EYE,
+    MIC_WAITING_EYE
 } EYE_TYPE;
 
 void init_default_value()

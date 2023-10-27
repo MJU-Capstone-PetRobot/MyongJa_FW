@@ -522,7 +522,7 @@ void displayEyes(int eyes)
         case DANGER_EYE:
             dangerEyes();
             break;
-        case MICWAITING_EYE:
+        case MIC_WAITING_EYE:
             micWaitingEyes();
             break;
         default:
