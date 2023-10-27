@@ -14,6 +14,32 @@
 #include "eyes.h"
 #include "apps.h"
 
+TaskHandle_t CommsTaskHandle;
+TaskHandle_t DisplayTaskHandle;
+
+
+void CommsTask(void *parameter) {
+    while (true) {
+        /* 프로토콜 */
+        send_to_opi(); // opi 패킷 전송 UART0 TX
+        receive_from_opi(); // opi 패킷 수신 UART0 RX
+        receive_from_esp_s(); // esp_s 패킷 수신 UART2 RX
+        vTaskDelay(10 / portTICK_PERIOD_MS);  
+}
+
+void DisplaySensorTask(void *parameter) {
+    while (true) {
+        unsigned long currentMillis = millis();
+        static unsigned long previousMillis = 0;
+        if ((currentMillis - previousMillis) >= 10000) {
+            previousMillis = currentMillis;
+            myoungja.emo_code = CLOSE_EYE;
+        }
+
+        displayEyes(myoungja.emo_code);
+        receive_from_touch();
+        vTaskDelay(10 / portTICK_PERIOD_MS);  
+
 
 void setup() 
 {
@@ -55,6 +81,23 @@ void setup()
     /* 초기화 완료 */
     // neopixelWrite(RGB_BUILTIN,50,50,50);
     Serial.println("*************** Setup Done ****************");
+    xTaskCreatePinnedToCore(
+        CommsTask,        /* Task function. */
+        "CommsTask",      /* name of task. */
+        10000,            /* Stack size of task */
+        NULL,             /* parameter of the task */
+        1,                /* priority of the task */
+        &CommsTaskHandle, /* Task handle to keep track of created task */
+        0);               /* pin task to core 0 */
+
+    xTaskCreatePinnedToCore(
+        DisplaySensorTask,
+        "DisplaySensorTask",
+        10000,
+        NULL,
+        1,
+        &DisplayTaskHandle,
+        1);  // pin task to core 1
 }
 
 uint32_t time_cur = 0;
@@ -68,21 +111,5 @@ static int state = 0;
 
 void loop() 
 {
-    /* 프로토콜 */
-    send_to_opi(); // opi 패킷 전송 UART0 TX
-    receive_from_opi(); // opi 패킷 수신 UART0 RX
-    receive_from_esp_s(); // esp_s 패킷 수신 UART2 RX
-
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    static int state = 0 ;
-
-    if ((currentMillis - previousMillis) >= 10000)
-    {
-      previousMillis = currentMillis;
-      myoungja.emo_code = CLOSE_EYE;
-    }
-
-    displayEyes(myoungja.emo_code);
-    receive_from_touch();
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
