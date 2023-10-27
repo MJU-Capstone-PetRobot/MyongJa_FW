@@ -11,6 +11,20 @@
 #define GPS_PERIOD_MS           (5000)
 
 
+typedef enum
+{
+    NULL_EYE,
+    CLOSE_EYE,
+    MOVING_EYE,
+    WINK_EYE,
+    ANGRY_EYE,
+    SAD_EYE,
+    DAILY_EYE,
+    BAT_EYE,
+    DANGER_EYE,
+    MIC_WAITING_EYE
+} EYE_TYPE;
+
 typedef struct
 {
     // Send
@@ -25,26 +39,13 @@ typedef struct
 
     // Receive
     float RPZY[4];
-    int emo_code;
-    int emo_code_prev;
+    EYE_TYPE emo_code;
+    EYE_TYPE emo_code_prev;
 
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
 
-typedef enum
-{
-    NULL_EYE,
-    CLOSE_EYE,
-    MOVING_EYE,
-    WINK_EYE,
-    ANGRY_EYE,
-    SAD_EYE,
-    DAILY_EYE,
-    BAT_EYE,
-    DANGER_EYE,
-    MIC_WAITING_EYE
-} EYE_TYPE;
 
 void init_default_value()
 {
@@ -123,7 +124,7 @@ void receive_from_opi()
             int index;
             int cnt = 0;
             rx_str.replace("(", ""); // delete '('
-            rx_str.replace("N", ""); // delete 'N'
+            rx_str.replace("N^", ""); // delete 'N'
             rx_str.replace(")", ""); // delete ')'
 
             while(cnt != 4)
@@ -167,12 +168,20 @@ void receive_from_opi()
         else if(rx_str[1] == 'E') // 감정 표현 패킷 
         {
             rx_str.replace("(", "");
-            rx_str.replace("E", "");
+            rx_str.replace("E^", "");
             rx_str.replace(")", "");
 
-            myoungja.emo_code = (EYE_TYPE)(rx_str.toInt());
-            Serial.printf("[EMO] %d\n", myoungja.emo_code);
-            
+            // string to eye enum
+            if(rx_str == "daily") myoungja.emo_code = DAILY_EYE;
+            else if(rx_str == "wink") myoungja.emo_code = WINK_EYE;
+            else if(rx_str == "sad") myoungja.emo_code = SAD_EYE;
+            else if(rx_str == "angry") myoungja.emo_code = ANGRY_EYE;
+            else if(rx_str == "moving") myoungja.emo_code = MOVING_EYE;
+            else if(rx_str == "blink") myoungja.emo_code = CLOSE_EYE;
+            else if(rx_str == "low_bat") myoungja.emo_code = BAT_EYE;
+            else if(rx_str == "danger") myoungja.emo_code = DANGER_EYE;
+            else if(rx_str == "mic_waiting") myoungja.emo_code = MIC_WAITING_EYE;
+
             myoungja.emo_code_prev = myoungja.emo_code;
         }
         else

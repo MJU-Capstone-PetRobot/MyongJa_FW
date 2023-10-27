@@ -69,10 +69,9 @@ static int state = 0;
 void loop() 
 {
     /* 프로토콜 */
-    send_to_opi(); // esp-opi 패킷 전송 UART0 TX
-    receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
-    receive_from_esp_s();
-    // esp_s-esp_m 패킷 수신 UART2 RX
+    send_to_opi(); // opi 패킷 전송 UART0 TX
+    receive_from_opi(); // opi 패킷 수신 UART0 RX
+    receive_from_esp_s(); // esp_s 패킷 수신 UART2 RX
 
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
@@ -86,5 +85,4 @@ void loop()
 
     displayEyes(myoungja.emo_code);
     receive_from_touch();
-
 }
