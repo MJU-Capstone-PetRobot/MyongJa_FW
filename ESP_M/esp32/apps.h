@@ -1,22 +1,30 @@
+#ifndef _APPS_H_
+#define _APPS_H_
+
 #include <string.h>
 #include "mq7.h"
 #include "eyes.h"
 
-#ifndef _APPS_H_
-#define _APPS_H_
+#define ULTRASONIC_PERIOD_MS   (100)
+#define BAT_PERIOD_MS           (1000)
+#define CO_PERIOD_MS           (1000)
+
 
 typedef struct
 {
+    // Send
+    int ultrasonic[2];
+    String bat_percent;
+    String bat_time;
+    bool touch;
+    bool touch_prev;
+    int co_ppm;
+
+    // Receive
     float RPZY[4];
     int emo_code;
     int emo_code_prev;
 
-    bool touch;
-    bool touch_prev;
-    int co_ppm;
-    int distance;
-    String bat_percent;
-    String bat_hour;
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
@@ -49,34 +57,41 @@ void send_to_opi()
 
     if(myoungja.touch != myoungja.touch_prev)
     {
-        Serial.printf("<T%s>\n", String(myoungja.touch));
+        Serial.printf("<T^%s>\n", String(myoungja.touch));
     }
 
-    if((time_cur - time_old[0]) > 100)
+    if((time_cur - time_old[0]) > ULTRASONIC_PERIOD_MS)
     {
         // 초음파 센서
-        myoungja.distance++;
-        if(myoungja.distance == 4500) myoungja.distance = 0;
-        Serial.printf("<D%s>\n", String(myoungja.distance));
+        myoungja.ultrasonic[0]++;
+        myoungja.ultrasonic[1]++;
+
+        if(myoungja.ultrasonic[0] == 4500) myoungja.ultrasonic[0] = 0;
+        if(myoungja.ultrasonic[1] == 4500) myoungja.ultrasonic[1] = 0;
+
+        Serial.printf("<D^%s, %s>\n", String(myoungja.ultrasonic[0]), String(myoungja.ultrasonic[1]));
+
         time_old[0] = time_cur;
     }
 
-    if((time_cur - time_old[1]) > 1000)
+    if((time_cur - time_old[1]) > BAT_PERIOD_MS)
     {
-        // CO 농도
-        myoungja.co_ppm = read_mq7();
-        Serial.printf("<C%s>\n", String(myoungja.co_ppm));
-
         // 배터리 잔량
         myoungja.bat_percent = "90%";
-        myoungja.bat_hour = "1h 20m";
-        Serial.printf("<B%s,%s>\n", String(myoungja.bat_percent), String(myoungja.bat_hour));
+        myoungja.bat_time = "1h 20m";
+        
+        Serial.printf("<B^%s>\n", myoungja.bat_percent);
+        Serial.printf("<BD^%s>\n", myoungja.bat_time);
 
         time_old[1] = time_cur;
     }
 
-    if((time_cur - time_old[2]) > 5000)
+    if((time_cur - time_old[2]) > CO_PERIOD_MS)
     {
+        // CO 농도
+        myoungja.co_ppm = read_mq7();
+        Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
+
         time_old[2] = time_cur;
     }
 }
