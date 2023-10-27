@@ -6,16 +6,19 @@
 #include "eyes.h"
 
 #define ULTRASONIC_PERIOD_MS   (100)
-#define BAT_PERIOD_MS           (1000)
-#define CO_PERIOD_MS           (1000)
+#define BAT_PERIOD_MS           (3000)
+#define CO_PERIOD_MS           (3000)
+#define GPS_PERIOD_MS           (5000)
 
 
 typedef struct
 {
     // Send
-    int ultrasonic[2];
+    String ultrasonic[2];
     String bat_percent;
     String bat_time;
+    String gps[2];
+
     bool touch;
     bool touch_prev;
     int co_ppm;
@@ -62,14 +65,7 @@ void send_to_opi()
 
     if((time_cur - time_old[0]) > ULTRASONIC_PERIOD_MS)
     {
-        // 초음파 센서
-        myoungja.ultrasonic[0]++;
-        myoungja.ultrasonic[1]++;
-
-        if(myoungja.ultrasonic[0] == 4500) myoungja.ultrasonic[0] = 0;
-        if(myoungja.ultrasonic[1] == 4500) myoungja.ultrasonic[1] = 0;
-
-        Serial.printf("<D^%s, %s>\n", String(myoungja.ultrasonic[0]), String(myoungja.ultrasonic[1]));
+        Serial.printf("<D^%s, %s>\n",myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
 
         time_old[0] = time_cur;
     }
@@ -77,9 +73,6 @@ void send_to_opi()
     if((time_cur - time_old[1]) > BAT_PERIOD_MS)
     {
         // 배터리 잔량
-        myoungja.bat_percent = "90%";
-        myoungja.bat_time = "1h 20m";
-        
         Serial.printf("<B^%s>\n", myoungja.bat_percent);
         Serial.printf("<BD^%s>\n", myoungja.bat_time);
 
@@ -93,6 +86,13 @@ void send_to_opi()
         Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
 
         time_old[2] = time_cur;
+    }
+
+    if((time_cur - time_old[3]) > GPS_PERIOD_MS)
+    {
+        // GPS 위도, 경도
+        Serial.printf("<G^%s, %s>\n", myoungja.gps[0], myoungja.gps[1]);
+        time_old[3] = time_cur;
     }
 }
 
@@ -188,7 +188,135 @@ void receive_from_opi()
 
 void receive_from_esp_s()
 {
-    //
+    if (Serial2.available() <= 0) return;
+
+    char ch = Serial2.read();
+    static String rx_str = "";
+
+    static bool sof = false;
+    static bool eof = false;
+    static bool error = false;
+
+    static String ultrasonic_temp[2];
+    static String gps_temp[2];
+
+    rx_str += ch; // (N1,1,80,1)
+    rx_str.trim(); // delete '\n'
+
+    if(ch == '{') sof = true;
+    if((sof == true) && (ch == '}')) eof = true;
+
+    if(sof && eof) // 전체 패킷 수신 완료
+    {
+        if(rx_str[1] == 'D') // 초음파 센서
+        { 
+            int index;
+            int cnt = 0;
+
+            rx_str.replace("{", "");
+            rx_str.replace("D^", "");
+            rx_str.replace("}", "");
+
+            while(cnt != 2)
+            {
+                index = rx_str.indexOf(",");
+                if(index == -1)
+                {
+                    if(cnt == 1)
+                    {
+                        ultrasonic_temp[cnt] = rx_str;
+                        cnt++;
+                        error = false;                    
+                    }
+                    else 
+                    {
+                        error = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    ultrasonic_temp[cnt] = rx_str.substring(0, index);
+                    rx_str = rx_str.substring(index + 1);
+                    cnt++;
+                }
+            }
+
+            if(error)
+                Serial.println("[ERROR]");
+            else
+            {
+                myoungja.ultrasonic[0] = ultrasonic_temp[0];
+                myoungja.ultrasonic[1] = ultrasonic_temp[1];
+            }
+        }
+        else if(rx_str[1] == 'B' && rx_str[2] == 'D') // 배터리 지속 시간
+        {
+            rx_str.replace("{", "");
+            rx_str.replace("BD^", "");
+            rx_str.replace("}", "");
+
+            myoungja.bat_time = rx_str;
+        }
+        else if(rx_str[1] == 'B') // 배터리 잔량
+        {
+            rx_str.replace("{", "");
+            rx_str.replace("B^", "");
+            rx_str.replace("}", "");
+
+            myoungja.bat_percent = rx_str;
+        }
+        else if(rx_str[1] == 'G') // GPS 위치
+        {
+            int index;
+            int cnt = 0;
+
+            rx_str.replace("{", "");
+            rx_str.replace("G^", "");
+            rx_str.replace("}", "");
+
+            while(cnt != 2)
+            {
+                index = rx_str.indexOf(",");
+                if(index == -1)
+                {
+                    if(cnt == 1)
+                    {
+                        gps_temp[cnt] = rx_str;
+                        cnt++;
+                        error = false;                    
+                    }
+                    else 
+                    {
+                        error = true;
+                        break;
+                    }
+                }
+                else
+                {
+                    gps_temp[cnt] = rx_str.substring(0, index);
+                    rx_str = rx_str.substring(index + 1);
+                    cnt++;
+                }
+            }
+
+            if(error)
+                Serial.println("[ERROR]");
+            else
+            {
+                myoungja.gps[0] = gps_temp[0];
+                myoungja.gps[1] = gps_temp[1];
+            }
+        }
+        else
+        {
+            
+        }
+
+        rx_str = "";
+        sof = false;
+        eof = false;
+    }
 }
 
 void receive_from_touch()
