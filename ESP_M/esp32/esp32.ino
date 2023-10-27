@@ -19,13 +19,13 @@ void setup()
 {
     init_default_value();
 
-    /* 오렌지파이-ESP 통신 */
+    /* OPI - ESP 통신 */
     Serial.begin(115200); // OPI : UART0
     delay(100);
 
-    Serial.println("*******************************************");
-    Serial.println("**** [2023-09-16] Hi I'm ESP32_M board ****");
-    Serial.println("*******************************************");
+    Serial.println("************************************");
+    Serial.println("**** [2023-10-27] ESP32_M board ****");
+    Serial.println("************************************");
     
     /* 목 서보모터 통신 */
     Serial1.begin(1000000, SERIAL_8N1, 2, 1); // UART1 RX(2), TX(1)
@@ -33,6 +33,10 @@ void setup()
     delay(100);
     init_neck_position();
     move_neck(0, 0, 80, 0);
+
+    /* ESP_M - ESP_S 통신 */
+    Serial2.begin(115200, SERIAL_8N1, 40, 39);
+    delay(100);
 
     /* 디스플레이 SPI 통신 */
     initEyes();
@@ -65,8 +69,9 @@ static int state = 0;
 void loop() 
 {
     /* 프로토콜 */
-    receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
     send_to_opi(); // esp-opi 패킷 전송 UART0 TX
+    receive_from_opi(); // opi-esp 패킷 수신 UART0 RX
+    receive_from_esp_s();
     // esp_s-esp_m 패킷 수신 UART2 RX
 
     unsigned long currentMillis = millis();
