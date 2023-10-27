@@ -6,6 +6,7 @@
 ACS37800 mySensor;
 TinyGPSPlus gps;
 EspSoftwareSerial::UART GPS;
+EspSoftwareSerial::UART ESP_M;
 
 typedef struct
 {
@@ -23,38 +24,6 @@ ESP_M_DATA myoungja;
 void init_default_value()
 {
     memset(&myoungja, 0, sizeof(myoungja));
-}
-
-void send_to_ESP_M()
-{
-  static uint32_t time_cur = 0;
-  static uint32_t time_old[5] = {0};
-
-  time_cur = millis();
-
-  if((time_cur - time_old[0]) > 100)
-  {
-    // 초음파 센서
-    myoungja.distance1 = receive_from_ultrasonic_1();
-    myoungja.distance2 = receive_from_ultrasonic_2();
-    Serial.printf("*D^%s,%s*\n", String(myoungja.distance1), String(myoungja.distance2));
-    
-    time_old[0] = time_cur;
-  }
-
-  if((time_cur - time_old[1]) > 1000)
-  {
-    // 배터리 잔량 및 지속 시간
-    myoungja.bat_percent = calculateBatteryPercentage(volts);
-    myoungja.bat_hour = displayBatteryDuration(watts);
-    Serial.printf("*B^%s*\n", String(myoungja.bat_percent));
-    Serial.printf("*BD^%s*\n", String(myoungja.bat_hour));
-
-    // GPS
-    Serial.printf("*G^%s,%s*\n", String(myoungja.Latitude), String(myoungja.Longitude));
-
-    time_old[1] = time_cur;
-  }
 }
 
 
@@ -114,7 +83,7 @@ void processGPSdata()
 }
 
 /* 거리 측정 */
-void receive_from_ultrasonic_1()
+uint16_t receive_from_ultrasonic_1()
 {
   static int i = 1;
   static uint8_t data_buf[4] = {};
@@ -141,7 +110,7 @@ void receive_from_ultrasonic_1()
           Serial.print("1 distance : ");
           Serial.print(distance/10);
           Serial.println(" cm");
-          return distance1;
+          return distance;
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -168,7 +137,7 @@ void receive_from_ultrasonic_1()
   }
 }
 
-void receive_from_ultrasonic_2()
+uint16_t receive_from_ultrasonic_2()
 {
   static int i = 1;
   static uint8_t data_buf[4] = {};
@@ -195,7 +164,7 @@ void receive_from_ultrasonic_2()
           Serial.print("2 distance : ");
           Serial.print(distance/10);
           Serial.println(" cm");
-          return distance2;
+          return distance;
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -219,5 +188,39 @@ void receive_from_ultrasonic_2()
       header = true;
       data_buf[0] = 0xff;
     }
+  }
+}
+
+float volts, amps, watts;
+
+void send_to_ESP_M()
+{
+  static uint32_t time_cur = 0;
+  static uint32_t time_old[5] = {0};
+
+  time_cur = millis();
+
+  if((time_cur - time_old[0]) > 100)
+  {
+    // 초음파 센서
+    myoungja.distance1 = receive_from_ultrasonic_1();
+    myoungja.distance2 = receive_from_ultrasonic_2();
+    ESP_M.printf("*D^%s,%s*\n", String(myoungja.distance1), String(myoungja.distance2));
+    
+    time_old[0] = time_cur;
+  }
+
+  if((time_cur - time_old[1]) > 1000)
+  {
+    // 배터리 잔량 및 지속 시간
+    myoungja.bat_percent = calculateBatteryPercentage(volts);
+    myoungja.bat_hour = displayBatteryDuration(watts);
+    ESP_M.printf("*B^%s*\n", String(myoungja.bat_percent));
+    ESP_M.printf("*BD^%s*\n", String(myoungja.bat_hour));
+
+    // GPS
+    ESP_M.printf("*G^%s,%s*\n", String(myoungja.Latitude), String(myoungja.Longitude));
+
+    time_old[1] = time_cur;
   }
 }
