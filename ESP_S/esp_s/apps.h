@@ -12,8 +12,8 @@ typedef struct
 {
   float Latitude;
   float Longitude;
-  int distance1;
-  int distance2;
+  uint16_t distance1;
+  uint16_t distance2;
 
   String bat_percent;
   String bat_hour;
@@ -30,7 +30,7 @@ void init_default_value()
 /* 전압, 전류, 배터리 잔량 */
 void setupACS37800() 
 {
-  Wire.begin(40, 39);
+  Wire.begin(39, 40);
   if (!mySensor.begin()) 
   {
     Serial.println(F("ACS37800 not detected. Check connections and I2C address. Freezing..."));
@@ -83,7 +83,7 @@ void processGPSdata()
 }
 
 /* 거리 측정 */
-uint16_t receive_from_ultrasonic_1()
+void receive_from_ultrasonic_1()
 {
   static int i = 1;
   static uint8_t data_buf[4] = {};
@@ -107,10 +107,10 @@ uint16_t receive_from_ultrasonic_1()
         if(cs == data_buf[3])
         {
           distance = (data_buf[1] << 8) + data_buf[2];
+          myoungja.distance1 = distance;
           Serial.print("1 distance : ");
           Serial.print(distance/10);
           Serial.println(" cm");
-          return distance;
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -137,7 +137,7 @@ uint16_t receive_from_ultrasonic_1()
   }
 }
 
-uint16_t receive_from_ultrasonic_2()
+void receive_from_ultrasonic_2()
 {
   static int i = 1;
   static uint8_t data_buf[4] = {};
@@ -161,10 +161,10 @@ uint16_t receive_from_ultrasonic_2()
         if(cs == data_buf[3])
         {
           distance = (data_buf[1] << 8) + data_buf[2];
+          myoungja.distance2 = distance;
           Serial.print("2 distance : ");
           Serial.print(distance/10);
           Serial.println(" cm");
-          return distance;
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -203,10 +203,13 @@ void send_to_ESP_M()
   if((time_cur - time_old[0]) > 100)
   {
     // 초음파 센서
-    myoungja.distance1 = receive_from_ultrasonic_1();
-    myoungja.distance2 = receive_from_ultrasonic_2();
-    ESP_M.printf("*D^%s,%s*\n", String(myoungja.distance1), String(myoungja.distance2));
-    
+    // String packet = "*D^";
+    // packet += String(myoungja.distance1);
+    // packet += String(myoungja.distance2);
+    // packet += "*\n";
+
+    // ESP_M.print(packet);
+    ESP_M.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
     time_old[0] = time_cur;
   }
 
@@ -215,11 +218,11 @@ void send_to_ESP_M()
     // 배터리 잔량 및 지속 시간
     myoungja.bat_percent = calculateBatteryPercentage(volts);
     myoungja.bat_hour = displayBatteryDuration(watts);
-    ESP_M.printf("*B^%s*\n", String(myoungja.bat_percent));
-    ESP_M.printf("*BD^%s*\n", String(myoungja.bat_hour));
+    ESP_M.printf("{B^%s}\n", String(myoungja.bat_percent));
+    ESP_M.printf("{BD^%s}\n", String(myoungja.bat_hour));
 
     // GPS
-    ESP_M.printf("*G^%s,%s*\n", String(myoungja.Latitude), String(myoungja.Longitude));
+    ESP_M.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
 
     time_old[1] = time_cur;
   }

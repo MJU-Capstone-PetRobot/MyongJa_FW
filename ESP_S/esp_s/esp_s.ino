@@ -21,7 +21,7 @@ void setup()
   Serial2.begin(9600, SERIAL_8N1, 2, 1);  // UART2 RX(2), TX(1)
 
   /* 전압 및 전류 센싱 */
-//  setupACS37800();
+  setupACS37800();
 
   Serial.println("*************** Setup Done ****************");
 }
@@ -29,16 +29,11 @@ void setup()
 
 void loop() 
 {
-  /*
+  mySensor.readInstantaneous(&volts, &amps, &watts);
+
   receive_from_ultrasonic_1();
   receive_from_ultrasonic_2();
-  */
   processGPSdata();
-  send_to_ESP_M();
 
-  /*
-  mySensor.readInstantaneous(&volts, &amps, &watts);
-  String batteryDuration = displayBatteryDuration(watts);
-  float batteryPercentage = calculateBatteryPercentage(volts);
-  */
+  send_to_ESP_M();
 }
