@@ -20,13 +20,9 @@ TaskHandle_t DisplayTaskHandle;
 
 void CommsTask(void *parameter) {
   while (true) {
-
-
     /* 프로토콜 */
     send_to_opi();         // opi 패킷 전송 UART0 TX
     receive_from_esp_s();  // esp_s 패킷 수신 UART2 RX
-
-    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }
 void ReceiveFromOPITask(void *parameter) {
@@ -97,7 +93,7 @@ void setup() {
 
 
   /* 초기화 완료 */
-  neopixelWrite(RGB_BUILTIN,50,50,50);
+  //neopixelWrite(RGB_BUILTIN,50,50,50);
   Serial.println("*************** Setup Done ****************");
   xTaskCreatePinnedToCore(
     CommsTask,        /* Task function. */
@@ -133,8 +129,6 @@ uint32_t time_old[5] = { 0 };
 EYE_TYPE eye_cur = DAILY_EYE;
 uint16_t mq_7_value = 0;
 
-uint32_t currentMillis = 0;
-static uint32_t previousMillis = 0;
 static int state = 0;
 
 void loop() {

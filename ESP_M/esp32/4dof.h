@@ -125,7 +125,6 @@ void move_neck(float _theta, float _phi, float _z_set) {
     L1_a = step_transform(l1.magnitude());
     L2_a = step_transform(l2.magnitude());
     L3_a = step_transform(l3.magnitude());
-    vTaskDelay(20 / portTICK_PERIOD_MS);
 
     ax12a.moveSpeed(ID1, L1_a,250);
     ax12a.moveSpeed(ID2, L2_a,250);
