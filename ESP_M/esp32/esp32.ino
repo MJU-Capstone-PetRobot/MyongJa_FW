@@ -43,14 +43,14 @@ void DisplaySensorTask(void *parameter) {
     counter++;
 
     // If counter reaches 100 (which would be 10000 ms given the delay of 100 ms)
-    if (counter >= 100) {
+    if (counter >= 1000) {
       myoungja.emo_code = CLOSE_EYE;
       counter = 0;  // Reset the counter
     }
 
     // receive_from_touch();  // Uncomment if you want to add this function back
 
-    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
+    vTaskDelay(10 / portTICK_PERIOD_MS);  // Delay for 100 ms
   }
 }
 
