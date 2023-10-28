@@ -1,352 +1,270 @@
 #ifndef _APPS_H_
 #define _APPS_H_
 
-#include <string.h>
 #include "mq7.h"
 #include "eyes.h"
 
-#define ULTRASONIC_PERIOD_MS   (100)
-#define BAT_PERIOD_MS           (3000)
-#define CO_PERIOD_MS           (3000)
-#define GPS_PERIOD_MS           (5000)
+#define ULTRASONIC_PERIOD_MS (100)
+#define BAT_PERIOD_MS (3000)
+#define CO_PERIOD_MS (3000)
+#define GPS_PERIOD_MS (5000)
+#define MAX_STRING_SIZE (40)
 
-
-typedef enum
-{
-    NULL_EYE,
-    CLOSE_EYE,
-    MOVING_EYE,
-    WINK_EYE,
-    ANGRY_EYE,
-    SAD_EYE,
-    DAILY_EYE,
-    BAT_EYE,
-    DANGER_EYE,
-    MIC_WAITING_EYE
+typedef enum {
+  NULL_EYE,
+  CLOSE_EYE,
+  MOVING_EYE,
+  WINK_EYE,
+  ANGRY_EYE,
+  SAD_EYE,
+  DAILY_EYE,
+  BAT_EYE,
+  DANGER_EYE,
+  MIC_WAITING_EYE
 } EYE_TYPE;
 
 typedef struct
 {
-    // Send
-    String ultrasonic[2];
-    String bat_percent;
-    String bat_time;
-    String gps[2];
+  //Send
+  char ultrasonic[2][MAX_STRING_SIZE];
+  char bat_percent[MAX_STRING_SIZE];
+  char bat_time[MAX_STRING_SIZE];
+  char gps[2][MAX_STRING_SIZE];
 
-    bool touch;
-    bool touch_prev;
-    int co_ppm;
+  bool touch;
+  bool touch_prev;
+  int co_ppm;
 
-    // Receive
-    float RPZ[3];
-    EYE_TYPE emo_code;
-    EYE_TYPE emo_code_prev;
+  //Receive
+  float RPZ[3];
+  EYE_TYPE emo_code;
+  EYE_TYPE emo_code_prev;
 
 } ESP32_DATA;
 
 ESP32_DATA myoungja;
 
-
-void init_default_value()
-{
-    memset(&myoungja, 0, sizeof(myoungja));
+void init_default_value() {
+  memset(&myoungja, 0, sizeof(myoungja));
 }
 
-void send_to_opi()
-{
-    static uint32_t time_cur = 0;
-    static uint32_t time_old[5] = {0};
 
-    time_cur = millis();
+void send_to_opi() {
+  static uint32_t time_cur = 0;
+  static uint32_t time_old[5] = { 0 };
 
-    if(myoungja.touch != myoungja.touch_prev)
-    {
-        Serial.printf("<T^%s>\n", String(myoungja.touch));
-    }
+  time_cur = millis();
 
-    if((time_cur - time_old[0]) > ULTRASONIC_PERIOD_MS)
-    {
-        Serial.printf("<D^%s, %s>\n",myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
+  if (myoungja.touch != myoungja.touch_prev) {
+    Serial.printf("<T^%s>\n", String(myoungja.touch));
+  }
 
-        time_old[0] = time_cur;
-    }
+  if ((time_cur - time_old[0]) > ULTRASONIC_PERIOD_MS) {
+    Serial.printf("<D^%s, %s>\n", myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
 
-    if((time_cur - time_old[1]) > BAT_PERIOD_MS)
-    {
-        // 배터리 잔량
-        Serial.printf("<B^%s>\n", myoungja.bat_percent);
-        Serial.printf("<BD^%s>\n", myoungja.bat_time);
+    time_old[0] = time_cur;
+  }
 
-        time_old[1] = time_cur;
-    }
+  if ((time_cur - time_old[1]) > BAT_PERIOD_MS) {
+    // 배터리 잔량
+    Serial.printf("<B^%s>\n", myoungja.bat_percent);
+    Serial.printf("<BD^%s>\n", myoungja.bat_time);
 
-    if((time_cur - time_old[2]) > CO_PERIOD_MS)
-    {
-        // CO 농도
-        myoungja.co_ppm = read_mq7();
-        Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
+    time_old[1] = time_cur;
+  }
 
-        time_old[2] = time_cur;
-    }
+  if ((time_cur - time_old[2]) > CO_PERIOD_MS) {
+    // CO 농도
+    myoungja.co_ppm = read_mq7();
+    Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
 
-    if((time_cur - time_old[3]) > GPS_PERIOD_MS)
-    {
-        // GPS 위도, 경도
-        Serial.printf("<G^%s, %s>\n", myoungja.gps[0], myoungja.gps[1]);
-        time_old[3] = time_cur;
-    }
+    time_old[2] = time_cur;
+  }
+
+  if ((time_cur - time_old[3]) > GPS_PERIOD_MS) {
+    //GPS 위도, 경도
+    Serial.printf("<G^%s, %s>\n", myoungja.gps[0], myoungja.gps[1]);
+    time_old[3] = time_cur;
+  }
 }
 
-void receive_from_opi()
-{
-    if (Serial.available() <= 0) return;
+void receive_from_opi() {
 
-    char ch = Serial.read();
-    static String rx_str = "";
-    static String neck_cmd_str[3];
-    static bool sof = false;
-    static bool eof = false;
-    static bool error = false;
+  if (Serial.available() <= 0) return;
 
-    rx_str += ch; // (N1,1,80,1)
-    rx_str.trim(); // delete '\n'
+  char ch = Serial.read();
+  static char rx_str[MAX_STRING_SIZE] = { 0 };
+  static int rx_index = 0;  // We'll use this instead of strlen to append characters
+  static bool sof = false;
+  static bool eof = false;
+  static bool error = false;
 
-    if(ch == '(') sof = true;
-    if((sof == true) && (ch == ')')) eof = true;
+  size_t len = strlen(rx_str);
+  rx_str[len] = ch;
+  rx_str[len + 1] = '\0';
 
-    if(sof && eof) // 전체 패킷 수신 완료
+
+  if (ch == '(') {
+    sof = true;
+    eof = false;
+    error = false;
+    rx_index = 0;                       // Reset the index
+    memset(rx_str, 0, sizeof(rx_str));  // Clear the rx_str
+  }
+
+  // Append the character to rx_str, ensuring we don't exceed its size
+  if (rx_index < MAX_STRING_SIZE - 1) {
+    rx_str[rx_index] = ch;
+    rx_index++;
+    rx_str[rx_index] = '\0';
+  }
+
+  if ((sof == true) && (ch == ')')) {
+    eof = true;
+  }
+
+  if (sof && eof)  // 전체 패킷 수신 완료
+  {
+
+    Serial.print("[OPI->ESP] ");
+    //Serial.print(rx_str + " ");
+    char* token;
+    if (rx_str[1] == 'N')  // 목 제어 패킷
     {
-        Serial.print("[OPI->ESP] ");
-        Serial.print(rx_str + " ");
+      token = strtok(rx_str + 3, ",");
+      int cnt = 0;
+      while (token != NULL && cnt < 3) {
+        myoungja.RPZ[cnt] = atof(token);
+        Serial.printf("%s/n", token);  // Printing the token
+        cnt++;
+        token = strtok(NULL, ",");
+      }
+      if (cnt < 3)  // If we didn't get all three values
+      {
+        error = true;
+        Serial.println("[ERROR]");
+      } 
+      else {
+        move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2]);
+        
+      }
+    } else if (rx_str[1] == 'E') {
 
-        if(rx_str[1] == 'N') // 목 제어 패킷
-        {
-            int index;
-            int cnt = 0;
-            rx_str.replace("(", ""); // delete '('
-            rx_str.replace("N^", ""); // delete 'N'
-            rx_str.replace(")", ""); // delete ')'
+      token = strtok(rx_str + 3, ")");
 
-            while(cnt != 3)
-            {
-                index = rx_str.indexOf(",");
-                if(index == -1)
-                {
-                    if(cnt == 2)
-                    {
-                        neck_cmd_str[cnt] = rx_str;
-                        cnt++;
-                        error = false;                    
-                    }
-                    else 
-                    {
-                        error = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    neck_cmd_str[cnt] = rx_str.substring(0, index);
-                    rx_str = rx_str.substring(index + 1);
-                    cnt++;
-                }
-            }
+      if (token == NULL) {
+        error = true;
+      } else {
+        Serial.print("Parsed emotion: ");
+        Serial.println(token);
+        if (strcmp(token, "daily") == 0) myoungja.emo_code = DAILY_EYE;
+        else if (strcmp(token, "wink") == 0) myoungja.emo_code = WINK_EYE;
+        else if (strcmp(token, "sad") == 0) myoungja.emo_code = SAD_EYE;
+        else if (strcmp(token, "angry") == 0) myoungja.emo_code = ANGRY_EYE;
+        else if (strcmp(token, "moving") == 0) myoungja.emo_code = MOVING_EYE;
+        else if (strcmp(token, "blink") == 0) myoungja.emo_code = CLOSE_EYE;
+        else if (strcmp(token, "low_bat") == 0) myoungja.emo_code = BAT_EYE;
+        else if (strcmp(token, "danger") == 0) myoungja.emo_code = DANGER_EYE;
+        else if (strcmp(token, "mic_waiting") == 0) myoungja.emo_code = MIC_WAITING_EYE;
+        else error = true;
 
-            if(error)
-                Serial.println("[ERROR]");
-            else
-            {
-                myoungja.RPZ[0] = neck_cmd_str[0].toFloat(); //roll
-                myoungja.RPZ[1] = neck_cmd_str[1].toFloat(); //pitch
-                myoungja.RPZ[2] = neck_cmd_str[2].toInt(); //z-hight
-
-                move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2]);
-                Serial.printf("[NECK] %d, %d, %d, %d\n", L1_a, L2_a, L3_a);
-            }
-        }
-        else if(rx_str[1] == 'E') // 감정 표현 패킷 
-        {
-            rx_str.replace("(", "");
-            rx_str.replace("E^", "");
-            rx_str.replace(")", "");
-
-            // string to eye enum
-            if(rx_str == "daily") myoungja.emo_code = DAILY_EYE;
-            else if(rx_str == "wink") myoungja.emo_code = WINK_EYE;
-            else if(rx_str == "sad") myoungja.emo_code = SAD_EYE;
-            else if(rx_str == "angry") myoungja.emo_code = ANGRY_EYE;
-            else if(rx_str == "moving") myoungja.emo_code = MOVING_EYE;
-            else if(rx_str == "blink") myoungja.emo_code = CLOSE_EYE;
-            else if(rx_str == "low_bat") myoungja.emo_code = BAT_EYE;
-            else if(rx_str == "danger") myoungja.emo_code = DANGER_EYE;
-            else if(rx_str == "mic_waiting") myoungja.emo_code = MIC_WAITING_EYE;
-
-            myoungja.emo_code_prev = myoungja.emo_code;
-        }
-        else
-        {
-
-        }
-
-        rx_str = "";
-        sof = false;
-        eof = false;
+        if (!error) myoungja.emo_code_prev = myoungja.emo_code;
+      }
     }
+    if (error) Serial.println("[ERROR]");
+
+    sof = false;
+    eof = false;
+    error = false;
+    rx_index = 0;
+    memset(rx_str, 0, sizeof(rx_str));
+  }
 }
 
-void receive_from_esp_s()
-{
+void receive_from_esp_s() {
     if (Serial2.available() <= 0) return;
 
     char ch = Serial2.read();
-    static String rx_str = "";
-
+    static char rx_str[MAX_STRING_SIZE] = {0};
+    static int rx_index = 0;  // We'll use this instead of strlen to append characters
     static bool sof = false;
     static bool eof = false;
     static bool error = false;
 
-    static String ultrasonic_temp[2];
-    static String gps_temp[2];
+    char ultrasonic_temp[2][MAX_STRING_SIZE];
+    char gps_temp[2][MAX_STRING_SIZE];
 
-    rx_str += ch; // (N1,1,80,1)
-    rx_str.trim(); // delete '\n'
+    if (ch == '{') {
+        sof = true;
+        eof = false;
+        error = false;
+        rx_index = 0;                       // Reset the index
+        memset(rx_str, 0, sizeof(rx_str));  // Clear the rx_str
+    }
 
-    if(ch == '{') sof = true;
-    if((sof == true) && (ch == '}')) eof = true;
+    // Append the character to rx_str, ensuring we don't exceed its size
+    if (rx_index < MAX_STRING_SIZE - 1) {
+        rx_str[rx_index] = ch;
+        rx_index++;
+        rx_str[rx_index] = '\0';
+    }
 
-    if(sof && eof) // 전체 패킷 수신 완료
-    {
-        if(rx_str[1] == 'D') // 초음파 센서
-        { 
-            int index;
+    if ((sof == true) && (ch == '}')) {
+        eof = true;
+    }
+
+    if (sof && eof) {
+        char* token;
+        if (rx_str[1] == 'D') {
+            token = strtok(rx_str + 3, ",");
             int cnt = 0;
-
-            rx_str.replace("{", "");
-            rx_str.replace("D^", "");
-            rx_str.replace("}", "");
-
-            while(cnt != 2)
-            {
-                index = rx_str.indexOf(",");
-                if(index == -1)
-                {
-                    if(cnt == 1)
-                    {
-                        ultrasonic_temp[cnt] = rx_str;
-                        cnt++;
-                        error = false;                    
-                    }
-                    else 
-                    {
-                        error = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    ultrasonic_temp[cnt] = rx_str.substring(0, index);
-                    rx_str = rx_str.substring(index + 1);
-                    cnt++;
-                }
+            while (token != NULL && cnt < 2) {
+                strncpy(ultrasonic_temp[cnt], token, MAX_STRING_SIZE);
+                cnt++;
+                token = strtok(NULL, ",");
             }
 
-            if(error)
+            if (cnt < 2) {
                 Serial.println("[ERROR]");
-            else
-            {
-                myoungja.ultrasonic[0] = ultrasonic_temp[0];
-                myoungja.ultrasonic[1] = ultrasonic_temp[1];
+            } else {
+                strncpy(myoungja.ultrasonic[0], ultrasonic_temp[0], MAX_STRING_SIZE);
+                strncpy(myoungja.ultrasonic[1], ultrasonic_temp[1], MAX_STRING_SIZE);
             }
-        }
-        else if(rx_str[1] == 'B' && rx_str[2] == 'D') // 배터리 지속 시간
-        {
-            rx_str.replace("{", "");
-            rx_str.replace("BD^", "");
-            rx_str.replace("}", "");
-
-            myoungja.bat_time = rx_str;
-        }
-        else if(rx_str[1] == 'B') // 배터리 잔량
-        {
-            rx_str.replace("{", "");
-            rx_str.replace("B^", "");
-            rx_str.replace("}", "");
-
-            myoungja.bat_percent = rx_str;
-        }
-        else if(rx_str[1] == 'G') // GPS 위치
-        {
-            int index;
+        } else if (rx_str[1] == 'B' && rx_str[2] == 'D') {
+            token = strtok(rx_str + 4, "}");
+            if (token != NULL) {
+                strncpy(myoungja.bat_time, token, MAX_STRING_SIZE);
+            }
+        } else if (rx_str[1] == 'B') {
+            token = strtok(rx_str + 3, "}");
+            if (token != NULL) {
+                strncpy(myoungja.bat_percent, token, MAX_STRING_SIZE);
+            }
+        } else if (rx_str[1] == 'G') {
+            token = strtok(rx_str + 3, ",");
             int cnt = 0;
-
-            rx_str.replace("{", "");
-            rx_str.replace("G^", "");
-            rx_str.replace("}", "");
-
-            while(cnt != 2)
-            {
-                index = rx_str.indexOf(",");
-                if(index == -1)
-                {
-                    if(cnt == 1)
-                    {
-                        gps_temp[cnt] = rx_str;
-                        cnt++;
-                        error = false;                    
-                    }
-                    else 
-                    {
-                        error = true;
-                        break;
-                    }
-                }
-                else
-                {
-                    gps_temp[cnt] = rx_str.substring(0, index);
-                    rx_str = rx_str.substring(index + 1);
-                    cnt++;
-                }
+            while (token != NULL && cnt < 2) {
+                strncpy(gps_temp[cnt], token, MAX_STRING_SIZE);
+                cnt++;
+                token = strtok(NULL, ",");
             }
 
-            if(error)
+            if (cnt < 2) {
                 Serial.println("[ERROR]");
-            else
-            {
-                myoungja.gps[0] = gps_temp[0];
-                myoungja.gps[1] = gps_temp[1];
+            } else {
+                strncpy(myoungja.gps[0], gps_temp[0], MAX_STRING_SIZE);
+                strncpy(myoungja.gps[1], gps_temp[1], MAX_STRING_SIZE);
             }
         }
-        else
-        {
-            
-        }
 
-        rx_str = "";
+        // Reset the state for the next packet
         sof = false;
         eof = false;
+        error = false;
+        rx_index = 0;
+        memset(rx_str, 0, sizeof(rx_str));
     }
 }
 
-void receive_from_touch()
-{
-    if (digitalRead(TOUCH) == HIGH)
-    {
-      myoungja.touch = true;
-    }
-    else
-    {
-      myoungja.touch = false;
-    }
 
-    if (myoungja.touch_prev == false && myoungja.touch == true)
-    {
-      myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code = WINK_EYE;
-    }
-    else if (myoungja.touch_prev == true && myoungja.touch == false)
-    {
-      myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code = myoungja.emo_code_prev;
-    }
-}
-#endif 
+#endif

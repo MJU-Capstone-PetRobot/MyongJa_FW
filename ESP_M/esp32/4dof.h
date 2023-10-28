@@ -5,6 +5,17 @@ const float phi0 = 30;
 const float d = 25.0;
 const float e = 60.0;
 const float z0 = 26.0;  // Motor coordinate
+// Global variables to hold the current and target positions
+float current_theta = 0.0;
+float current_phi = 0.0;
+float current_z_set = z_set;
+
+float target_theta = 0.0;
+float target_phi = 0.0;
+float target_z_set = z_set;
+
+const float increment_value = 0.5;  // Adjust this value to change the smoothing speed
+
 
 
 struct Vector3 {
@@ -77,14 +88,46 @@ int step_transform(float length) {
 
 
 
+// Function to move towards a target incrementally
 void move_neck(float _theta, float _phi, float _z_set) {
-  create_l_vectors(_theta, _phi, _z_set);
+    // Update targets
+    target_theta = _theta;
+    target_phi = _phi;
+    target_z_set = _z_set;
 
-  L1_a = step_transform(l1.magnitude());
-  L2_a = step_transform(l2.magnitude());
-  L3_a = step_transform(l3.magnitude());
+    // Calculate the difference between the current and target
+    float dTheta = target_theta - current_theta;
+    float dPhi = target_phi - current_phi;
+    float dZSet = target_z_set - current_z_set;
 
-  ax12a.move(ID1, L1_a);
-  ax12a.move(ID2, L2_a);
-  ax12a.move(ID3, L3_a);
+    // If the difference is larger than the increment, update by the increment
+    if (abs(dTheta) > increment_value) {
+        current_theta += (dTheta > 0 ? increment_value : -increment_value);
+    } else {
+        current_theta = target_theta;
+    }
+
+    if (abs(dPhi) > increment_value) {
+        current_phi += (dPhi > 0 ? increment_value : -increment_value);
+    } else {
+        current_phi = target_phi;
+    }
+
+    if (abs(dZSet) > increment_value) {
+        current_z_set += (dZSet > 0 ? increment_value : -increment_value);
+    } else {
+        current_z_set = target_z_set;
+    }
+
+    // Now move to the updated position
+    create_l_vectors(current_theta, current_phi, current_z_set);
+    
+    L1_a = step_transform(l1.magnitude());
+    L2_a = step_transform(l2.magnitude());
+    L3_a = step_transform(l3.magnitude());
+    vTaskDelay(20 / portTICK_PERIOD_MS);
+
+    ax12a.moveSpeed(ID1, L1_a,250);
+    ax12a.moveSpeed(ID2, L2_a,250);
+    ax12a.moveSpeed(ID3, L3_a,250);
 }
