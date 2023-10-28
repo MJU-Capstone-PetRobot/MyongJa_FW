@@ -38,7 +38,7 @@ typedef struct
     int co_ppm;
 
     // Receive
-    float RPZY[4];
+    float RPZ[3];
     EYE_TYPE emo_code;
     EYE_TYPE emo_code_prev;
 
@@ -103,7 +103,7 @@ void receive_from_opi()
 
     char ch = Serial.read();
     static String rx_str = "";
-    static String neck_cmd_str[4];
+    static String neck_cmd_str[3];
     static bool sof = false;
     static bool eof = false;
     static bool error = false;
@@ -127,12 +127,12 @@ void receive_from_opi()
             rx_str.replace("N^", ""); // delete 'N'
             rx_str.replace(")", ""); // delete ')'
 
-            while(cnt != 4)
+            while(cnt != 3)
             {
                 index = rx_str.indexOf(",");
                 if(index == -1)
                 {
-                    if(cnt == 3)
+                    if(cnt == 2)
                     {
                         neck_cmd_str[cnt] = rx_str;
                         cnt++;
@@ -156,13 +156,12 @@ void receive_from_opi()
                 Serial.println("[ERROR]");
             else
             {
-                myoungja.RPZY[0] = neck_cmd_str[0].toFloat(); //roll
-                myoungja.RPZY[1] = neck_cmd_str[1].toFloat(); //pitch
-                myoungja.RPZY[2] = neck_cmd_str[2].toFloat(); //z-distance
-                myoungja.RPZY[3] = neck_cmd_str[3].toFloat(); //z-axis yaw
+                myoungja.RPZ[0] = neck_cmd_str[0].toFloat(); //roll
+                myoungja.RPZ[1] = neck_cmd_str[1].toFloat(); //pitch
+                myoungja.RPZ[2] = neck_cmd_str[2].toInt(); //z-hight
 
-                move_neck(myoungja.RPZY[0], myoungja.RPZY[1], myoungja.RPZY[2], myoungja.RPZY[3]);
-                Serial.printf("[NECK] %d, %d, %d, %d\n", L1_a, L2_a, L3_a, yaw_step);
+                move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2]);
+                Serial.printf("[NECK] %d, %d, %d, %d\n", L1_a, L2_a, L3_a);
             }
         }
         else if(rx_str[1] == 'E') // 감정 표현 패킷 
