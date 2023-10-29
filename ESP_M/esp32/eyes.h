@@ -399,6 +399,7 @@ void receive_from_touch()
       myoungja.touch_prev = myoungja.touch;
       myoungja.emo_code = myoungja.emo_code_prev;
     }
+    vTaskDelay(20 / portTICK_PERIOD_MS);
 }
 void micWaitingEyes()
 {
@@ -485,6 +486,7 @@ void displayEyes(int eyes)
         default:
             break;
     }
+    vTaskDelay(5 / portTICK_PERIOD_MS);
 }
 
 #endif
