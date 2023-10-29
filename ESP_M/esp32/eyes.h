@@ -86,8 +86,6 @@ void dailyEyes()
 
 void closeEyes()
 {
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
     static int state = 0;
 
     switch(state)
@@ -327,44 +325,32 @@ void sadEyes()
 
 void batteryEyes()
 {
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    static int state = 0 ;
+  static int state = 0 ;
 
-      if ((currentMillis - previousMillis) >= 100)
-      {
-          previousMillis = currentMillis;
-          state++;
-          if (state == 2)
-          {
-            state = 0;
-          }
-      }
+  switch(state)
+  {
+    case 0 :
+      digitalWrite(LEFT_EYE, 0);
+      img.pushImage(0, 0, 240, 240, bat_1);
+      img.pushSprite(0, 0);
+      digitalWrite(LEFT_EYE, 1);
 
-    switch(state)
-    {
-        case 0 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, bat_1);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
+      digitalWrite(RIGHT_EYE, 0);
+      img.pushImage(0, 0, 240, 240, bat_1);
+      img.pushSprite(0, 0);
+      digitalWrite(RIGHT_EYE, 1);
+      break;
+    case 1 :
+      digitalWrite(LEFT_EYE, 0);
+      img.pushImage(0, 0, 240, 240, bat_2);
+      img.pushSprite(0, 0);
+      digitalWrite(LEFT_EYE, 1);
 
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, bat_1);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
-        case 1 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, bat_2);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, bat_2);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
+      digitalWrite(RIGHT_EYE, 0);
+      img.pushImage(0, 0, 240, 240, bat_2);
+      img.pushSprite(0, 0);
+      digitalWrite(RIGHT_EYE, 1);
+      break;
     }
 
     state++;
@@ -420,11 +406,11 @@ void micWaitingEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-      if ((currentMillis - previousMillis) >= 600)
+      if ((currentMillis - previousMillis) >= 600 && myoungja.emo_code_prev != myoungja.emo_code)
       {
           previousMillis = currentMillis;
           state++;
-          if (state == 3)
+          if (state == 2)
           {
             state = 0;
           }
@@ -454,16 +440,6 @@ void micWaitingEyes()
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
-        case 2 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, mic_waiting3);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, mic_waiting3);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
     }
 }
 

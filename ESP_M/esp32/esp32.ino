@@ -132,6 +132,5 @@ uint16_t mq_7_value = 0;
 static int state = 0;
 
 void loop() {
-  // vTaskDelay(1000 / portTICK_PERIOD_MS);
-  micWaitingEyes();
+  vTaskDelay(1000 / portTICK_PERIOD_MS);
 }
