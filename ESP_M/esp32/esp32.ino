@@ -27,7 +27,8 @@ void CommsTask(void *parameter) {
 }
 void ReceiveFromOPITask(void *parameter) {
   while (true) {
-    receive_from_opi();                   // OPI 패킷 수신 UART0 RX
+    receive_from_opi();                  // OPI 패킷 수신 UART0 RX
+    vTaskDelay(1 / portTICK_PERIOD_MS);  // Delay for 0.1 ms
   }
 }
 
@@ -42,15 +43,14 @@ void DisplaySensorTask(void *parameter) {
     // Increment the counter for every loop iteration
     counter++;
 
-    // If counter reaches 100 (which would be 10000 ms given the delay of 100 ms)
-    if (counter >= 1000) {
+    // If counter reaches 2000 (which would be 10000 ms given the delay of 25 ms)
+    if (counter >= 400) {
       myoungja.emo_code = CLOSE_EYE;
       counter = 0;  // Reset the counter
     }
 
-    // receive_from_touch();  // Uncomment if you want to add this function back
-
-    vTaskDelay(10 / portTICK_PERIOD_MS);  // Delay for 100 ms
+    receive_from_touch();  // Uncomment if you want to add this function back
+    
   }
 }
 
@@ -96,15 +96,6 @@ void setup() {
   //neopixelWrite(RGB_BUILTIN,50,50,50);
   Serial.println("*************** Setup Done ****************");
   xTaskCreatePinnedToCore(
-    CommsTask,        /* Task function. */
-    "CommsTask",      /* name of task. */
-    10000,            /* Stack size of task */
-    NULL,             /* parameter of the task */
-    2,                /* priority of the task */
-    &CommsTaskHandle, /* Task handle to keep track of created task */
-    1);               /* pin task to core 0 */
-
-  xTaskCreatePinnedToCore(
     DisplaySensorTask,
     "DisplaySensorTask",
     10000,
@@ -113,9 +104,19 @@ void setup() {
     &DisplayTaskHandle,
     1);  // pin task to core 1
   xTaskCreatePinnedToCore(
+    CommsTask,        /* Task function. */
+    "CommsTask",      /* name of task. */
+    10000,            /* Stack size of task */
+    NULL,             /* parameter of the task */
+    2,                /* priority of the task */
+    &CommsTaskHandle, /* Task handle to keep track of created task */
+    1);               /* pin task to core 0 */
+
+
+  xTaskCreatePinnedToCore(
     ReceiveFromOPITask,   /* Task function. */
     "ReceiveFromOPITask", /* name of task. */
-    10000,                 /* Stack size of task */
+    10000,                /* Stack size of task */
     NULL,                 /* parameter of the task */
     1,                    /* priority of the task */
     NULL,                 /* We don't need the task handle */

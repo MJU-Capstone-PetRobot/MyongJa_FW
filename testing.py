@@ -17,7 +17,7 @@ def send_oscillating_data(serial_port):
         data = f"(N^{val1:.2f},0,70)"  # Formatting the float to 2 decimal places
         serial_port.write(data.encode())
         print(f"Sent: {data}")
-        time.sleep(0.05)  # Send data every 50 milliseconds hz = 20
+        time.sleep(0.03)  # Send data every 30ms hz = 1/0.03 = 33.33
 
 if __name__ == "__main__":
     port = "COM6"  # For Windows
