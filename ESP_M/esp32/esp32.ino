@@ -20,39 +20,45 @@ TaskHandle_t DisplayTaskHandle;
 
 void CommsTask(void *parameter) {
   while (true) {
-
-
     /* 프로토콜 */
     send_to_opi();         // opi 패킷 전송 UART0 TX
-    receive_from_opi();    // opi 패킷 수신 UART0 RX
     receive_from_esp_s();  // esp_s 패킷 수신 UART2 RX
-
-    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }
+void ReceiveFromOPITask(void *parameter) {
+  while (true) {
+    receive_from_opi();                  // OPI 패킷 수신 UART0 RX
+    vTaskDelay(1 / portTICK_PERIOD_MS);  // Delay for 0.1 ms
+  }
+}
+
 
 void DisplaySensorTask(void *parameter) {
-  while (true) {
+  static int counter = 0;
 
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    if ((currentMillis - previousMillis) >= 10000) {
-      previousMillis = currentMillis;
+  while (true) {
+    displayEyes(myoungja.emo_code);
+
+    // Increment the counter for every loop iteration
+    counter++;
+
+    // If counter reaches 2000 (which would be 10000 ms given the delay of 25 ms)
+    if (counter >= 400) {
       myoungja.emo_code = CLOSE_EYE;
+      counter = 0;  // Reset the counter
     }
 
-    displayEyes(myoungja.emo_code);
-    // receive_from_touch();
-
-    vTaskDelay(100 / portTICK_PERIOD_MS);
+    receive_from_touch();  // Uncomment if you want to add this function back
+    
   }
 }
+
 
 void setup() {
   init_default_value();
 
   /* OPI - ESP 통신 */
-  Serial.begin(115200);  // OPI : UART0
+  Serial.begin(1000000);  // OPI : UART0
   delay(100);
 
   Serial.println("************************************");
@@ -62,7 +68,7 @@ void setup() {
   /* 목 서보모터 통신 */
   Serial1.begin(1000000, SERIAL_8N1, 2, 1);  // UART1 RX(2), TX(1)
   ax12a.begin(BaudRate, DirectionPin, &Serial1);
-  delay(100);
+  delay(200);
   init_neck_position();
   move_neck(0, 0, 80);
 
@@ -84,35 +90,45 @@ void setup() {
   myoungja.touch_prev = false;
   // pinMode(MQ_7, INPUT);
 
+
   /* 초기화 완료 */
-  // neopixelWrite(RGB_BUILTIN,50,50,50);
+  //neopixelWrite(RGB_BUILTIN,50,50,50);
   Serial.println("*************** Setup Done ****************");
+  xTaskCreatePinnedToCore(
+    DisplaySensorTask,
+    "DisplaySensorTask",
+    10000,
+    NULL,
+    1,
+    &DisplayTaskHandle,
+    1);  // pin task to core 1
   xTaskCreatePinnedToCore(
     CommsTask,        /* Task function. */
     "CommsTask",      /* name of task. */
     10000,            /* Stack size of task */
     NULL,             /* parameter of the task */
-    1,                /* priority of the task */
+    2,                /* priority of the task */
     &CommsTaskHandle, /* Task handle to keep track of created task */
-    0);               /* pin task to core 0 */
+    1);               /* pin task to core 0 */
+
 
   xTaskCreatePinnedToCore(
-    DisplaySensorTask,
-    "DisplaySensorTask",
-    100000,
-    NULL,
-    1,
-    &DisplayTaskHandle,
-    1);  // pin task to core 1
+    ReceiveFromOPITask,   /* Task function. */
+    "ReceiveFromOPITask", /* name of task. */
+    10000,                /* Stack size of task */
+    NULL,                 /* parameter of the task */
+    1,                    /* priority of the task */
+    NULL,                 /* We don't need the task handle */
+    0);                   /* pin task to core 0 */
 }
+
+
 
 uint32_t time_cur = 0;
 uint32_t time_old[5] = { 0 };
 EYE_TYPE eye_cur = DAILY_EYE;
 uint16_t mq_7_value = 0;
 
-uint32_t currentMillis = 0;
-static uint32_t previousMillis = 0;
 static int state = 0;
 
 void loop() {

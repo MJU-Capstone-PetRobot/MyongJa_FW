@@ -90,22 +90,13 @@ void closeEyes()
     static unsigned long previousMillis = 0;
     static int state = 0;
 
-    if ((currentMillis - previousMillis) >= 100)
+    switch(state)
     {
-        previousMillis = currentMillis;
-        state++;
-        if(state == 10)
-        {
-          state = 0;
-          myoungja.emo_code = myoungja.emo_code_prev;
-        }
-
-      switch(state)
-      {
         case 0 :
             dailyEyes();
             break;
         case 1 :
+        case 9 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
             img.pushSprite(0, 0);
@@ -117,6 +108,7 @@ void closeEyes()
             digitalWrite(RIGHT_EYE, 1);
             break;
         case 2 :
+        case 8 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close2_L);
             img.pushSprite(0, 0);
@@ -128,6 +120,7 @@ void closeEyes()
             digitalWrite(RIGHT_EYE, 1);
             break;
         case 3 :
+        case 7 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close3_L);
             img.pushSprite(0, 0);
@@ -139,6 +132,7 @@ void closeEyes()
             digitalWrite(RIGHT_EYE, 1);
             break;
         case 4 :
+        case 6 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close4_L);
             img.pushSprite(0, 0);
@@ -160,75 +154,25 @@ void closeEyes()
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
-        case 6 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close4_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close4_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
-        case 7 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close3_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close3_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
-        case 8 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close2_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close2_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
-        case 9 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close1_L);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, close1_R);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
-            break;
         default:
             break;
-        }
     }
+
+    state++;
+    if(state == 10)
+    {
+        state = 0;
+        myoungja.emo_code = myoungja.emo_code_prev;
+    }
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
 }
 
 
-void movingEyes()
-{
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    static int state = 0 ;
+void movingEyes() {
+    static int state = 0;
 
-    if ((currentMillis - previousMillis) >= 2000)
-    {
-        previousMillis = currentMillis;
-        state++;
-        if (state == 4)
-        {
-            state = 0;
-        }
-    }
-
-    switch(state)
-    {
+    switch(state) {
         case 0 :
             dailyEyes();
             break;
@@ -268,7 +212,15 @@ void movingEyes()
         default :
             break;
     }
+
+    state++;
+    if (state == 4) {
+        state = 0;
+    }
+
+    vTaskDelay(2000 / portTICK_PERIOD_MS);  // Delay for 2000 ms
 }
+
 
 void winkEyes()
 {
@@ -285,26 +237,13 @@ void winkEyes()
 
 void angryEyes()
 {
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    static int state = 0 ;
-
-    if ((currentMillis - previousMillis) >= 200)
-    {
-        previousMillis = currentMillis;
-        state++;
-        if (state == 3)
-        {
-            state = 0;
-        }
-    }
+    static int state = 0;
 
     switch(state)
     {
         case 0 :
             dailyEyes();
             break;
-
         case 1 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, close1_L);
@@ -316,7 +255,6 @@ void angryEyes()
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
-
         case 2 :
             digitalWrite(LEFT_EYE, 0);
             img.pushImage(0, 0, 240, 240, angry_L);
@@ -332,23 +270,19 @@ void angryEyes()
             break;
     }
 
+    state++;
+    if (state == 3)
+    {
+        state = 0;
+    }
+
+    vTaskDelay(200 / portTICK_PERIOD_MS);  // Delay for 200 ms
 }
+
 
 void sadEyes()
 {
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
-    static int state = 0 ;
-
-    if ((currentMillis - previousMillis) >= 100)
-    {
-        previousMillis = currentMillis;
-        state++;
-        if (state == 3)
-        {
-            state = 0;
-        }
-    }
+    static int state = 0;
 
     switch(state)
     {
@@ -381,7 +315,15 @@ void sadEyes()
             break;
     }
 
+    state++;
+    if (state == 3)
+    {
+        state = 0;
+    }
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
 }
+
 
 void batteryEyes()
 {
@@ -389,7 +331,7 @@ void batteryEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-      if ((currentMillis - previousMillis) >= 100 )
+      if ((currentMillis - previousMillis) >= 100)
       {
           previousMillis = currentMillis;
           state++;
@@ -424,7 +366,16 @@ void batteryEyes()
             digitalWrite(RIGHT_EYE, 1);
             break;
     }
+
+    state++;
+    if (state == 2)
+    {
+        state = 0;
+    }
+
+    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
 }
+
 
 void dangerEyes()
 {
@@ -439,6 +390,30 @@ void dangerEyes()
   digitalWrite(RIGHT_EYE, 1);
 }
 
+
+void receive_from_touch()
+{
+    if (digitalRead(TOUCH) == HIGH)
+    {
+      myoungja.touch = true;
+    }
+    else
+    {
+      myoungja.touch = false;
+    }
+
+    if (myoungja.touch_prev == false && myoungja.touch == true)
+    {
+      myoungja.touch_prev = myoungja.touch;
+      myoungja.emo_code = WINK_EYE;
+    }
+    else if (myoungja.touch_prev == true && myoungja.touch == false)
+    {
+      myoungja.touch_prev = myoungja.touch;
+      myoungja.emo_code = myoungja.emo_code_prev;
+    }
+    vTaskDelay(20 / portTICK_PERIOD_MS);
+}
 void micWaitingEyes()
 {
     unsigned long currentMillis = millis();
@@ -449,7 +424,7 @@ void micWaitingEyes()
       {
           previousMillis = currentMillis;
           state++;
-          if (state == 2)
+          if (state == 3)
           {
             state = 0;
           }
@@ -479,8 +454,19 @@ void micWaitingEyes()
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
+        case 2 :
+            digitalWrite(LEFT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, mic_waiting3);
+            img.pushSprite(0, 0);
+            digitalWrite(LEFT_EYE, 1);
+
+            digitalWrite(RIGHT_EYE, 0);
+            img.pushImage(0, 0, 240, 240, mic_waiting3);
+            img.pushSprite(0, 0);
+            digitalWrite(RIGHT_EYE, 1);
     }
 }
+
 
 void displayEyes(int eyes)
 {
@@ -516,6 +502,7 @@ void displayEyes(int eyes)
         default:
             break;
     }
+    vTaskDelay(5 / portTICK_PERIOD_MS);
 }
 
 #endif
