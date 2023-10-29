@@ -33,7 +33,6 @@
 #include "./emo/wink_R.h"
 #include "./emo/mic_waiting1.h"
 #include "./emo/mic_waiting2.h"
-#include "./emo/mic_waiting3.h"
 
 
 #define LEFT_EYE  10
@@ -87,7 +86,6 @@ void dailyEyes()
 
 void closeEyes()
 {
-  // 시작할 때 이전의 EMOCODE를 받아야하나 ? 
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
     static int state = 0;
@@ -391,7 +389,7 @@ void batteryEyes()
     static unsigned long previousMillis = 0;
     static int state = 0 ;
 
-      if ((currentMillis - previousMillis) >= 100)
+      if ((currentMillis - previousMillis) >= 100 )
       {
           previousMillis = currentMillis;
           state++;
@@ -451,7 +449,7 @@ void micWaitingEyes()
       {
           previousMillis = currentMillis;
           state++;
-          if (state == 3)
+          if (state == 2)
           {
             state = 0;
           }
@@ -481,16 +479,6 @@ void micWaitingEyes()
             img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
-        case 2 :
-            digitalWrite(LEFT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, mic_waiting3);
-            img.pushSprite(0, 0);
-            digitalWrite(LEFT_EYE, 1);
-
-            digitalWrite(RIGHT_EYE, 0);
-            img.pushImage(0, 0, 240, 240, mic_waiting3);
-            img.pushSprite(0, 0);
-            digitalWrite(RIGHT_EYE, 1);
     }
 }
 

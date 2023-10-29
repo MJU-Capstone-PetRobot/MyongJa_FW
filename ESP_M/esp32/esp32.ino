@@ -34,7 +34,6 @@ void CommsTask(void *parameter) {
 void DisplaySensorTask(void *parameter) {
   while (true) {
 
-
     unsigned long currentMillis = millis();
     static unsigned long previousMillis = 0;
     if ((currentMillis - previousMillis) >= 10000) {
@@ -117,5 +116,6 @@ static uint32_t previousMillis = 0;
 static int state = 0;
 
 void loop() {
-  vTaskDelay(1000 / portTICK_PERIOD_MS);
+  // vTaskDelay(1000 / portTICK_PERIOD_MS);
+  micWaitingEyes();
 }
