@@ -36,20 +36,17 @@ void ReceiveFromOPITask(void *parameter) {
 void DisplaySensorTask(void *parameter) {
   static int counter = 0;
 
-  while (true) {
-    displayEyes(myoungja.emo_code);
-
-    // Increment the counter for every loop iteration
+  while (true) 
+  {
     counter++;
-
-    // If counter reaches 2000 (which would be 10000 ms given the delay of 25 ms)
     if (counter >= 400) {
       myoungja.emo_code = CLOSE_EYE;
-      counter = 0;  // Reset the counter
+      counter = 0;
     }
 
-    receive_from_touch();  // Uncomment if you want to add this function back
-    
+    displayEyes(myoungja.emo_code);
+    receive_from_touch();
+    vTaskDelay(5 / portTICK_PERIOD_MS);
   }
 }
 
@@ -80,6 +77,7 @@ void setup() {
   initEyes();
   delay(100);
   displayEyes(DAILY_EYE);
+  myoungja.emo_code = DAILY_EYE;
   myoungja.emo_code_prev = DAILY_EYE;
 
   /* MQ-7 일산화탄소 센서 */

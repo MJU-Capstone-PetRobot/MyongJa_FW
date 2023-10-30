@@ -161,14 +161,30 @@ void closeEyes()
     {
         state = 0;
         myoungja.emo_code = myoungja.emo_code_prev;
+        myoungja.emo_code_prev = CLOSE_EYE;
     }
 
-    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
+    vTaskDelay(100 / portTICK_PERIOD_MS);
 }
 
 
 void movingEyes() {
     static int state = 0;
+
+    if (myoungja.emo_code_prev != myoungja.emo_code)
+    {
+        state ++;
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+        if (state == 3)
+        {
+          state = 0;
+          myoungja.emo_code_prev = MOVING_EYE;
+          
+          return ;
+        }
+    }
+    
+    else return ;
 
     switch(state) {
         case 0 :
@@ -211,31 +227,40 @@ void movingEyes() {
             break;
     }
 
-    state++;
-    if (state == 4) {
-        state = 0;
-    }
-
-    vTaskDelay(2000 / portTICK_PERIOD_MS);  // Delay for 2000 ms
 }
 
 
 void winkEyes()
 {
-      digitalWrite(LEFT_EYE, 0);
-      img.pushImage(0, 0, 240, 240, wink_L);
-      img.pushSprite(0, 0);
-      digitalWrite(LEFT_EYE, 1);
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
 
-      digitalWrite(RIGHT_EYE, 0);
-      img.pushImage(0, 0, 240, 240, wink_R);
-      img.pushSprite(0, 0);
-      digitalWrite(RIGHT_EYE, 1);
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
 }
 
 void angryEyes()
 {
     static int state = 0;
+
+    if (myoungja.emo_code != myoungja.emo_code_prev)
+    {
+        state ++;
+        vTaskDelay(200 / portTICK_PERIOD_MS);
+
+        if (state == 3)
+        {
+          state = 0;
+          myoungja.emo_code_prev = ANGRY_EYE;
+
+          return;
+        }
+    }
+    else return ;
 
     switch(state)
     {
@@ -268,19 +293,26 @@ void angryEyes()
             break;
     }
 
-    state++;
-    if (state == 3)
-    {
-        state = 0;
-    }
-
-    vTaskDelay(200 / portTICK_PERIOD_MS);  // Delay for 200 ms
 }
 
 
 void sadEyes()
 {
     static int state = 0;
+
+    if (myoungja.emo_code != myoungja.emo_code_prev)
+    {
+        state ++;
+        vTaskDelay(100 / portTICK_PERIOD_MS);
+        if (state == 3)
+        {
+          state = 0;
+          myoungja.emo_code_prev = SAD_EYE;
+
+          return ;
+        }
+    }
+    else return ;
 
     switch(state)
     {
@@ -313,13 +345,6 @@ void sadEyes()
             break;
     }
 
-    state++;
-    if (state == 3)
-    {
-        state = 0;
-    }
-
-    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
 }
 
 
@@ -354,12 +379,14 @@ void batteryEyes()
     }
 
     state++;
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+
     if (state == 2)
     {
         state = 0;
+        myoungja.emo_code_prev = BAT_EYE;
     }
 
-    vTaskDelay(100 / portTICK_PERIOD_MS);  // Delay for 100 ms
 }
 
 
@@ -374,6 +401,8 @@ void dangerEyes()
   img.pushImage(0, 0, 240, 240, danger);
   img.pushSprite(0, 0);
   digitalWrite(RIGHT_EYE, 1);
+
+  myoungja.emo_code_prev = DANGER_EYE;
 }
 
 
@@ -402,19 +431,7 @@ void receive_from_touch()
 }
 void micWaitingEyes()
 {
-    unsigned long currentMillis = millis();
-    static unsigned long previousMillis = 0;
     static int state = 0 ;
-
-      if ((currentMillis - previousMillis) >= 600 && myoungja.emo_code_prev != myoungja.emo_code)
-      {
-          previousMillis = currentMillis;
-          state++;
-          if (state == 2)
-          {
-            state = 0;
-          }
-      }
 
     switch(state)
     {
@@ -441,6 +458,16 @@ void micWaitingEyes()
             digitalWrite(RIGHT_EYE, 1);
             break;
     }
+    
+    state ++;
+    vTaskDelay(600 / portTICK_PERIOD_MS);
+    
+    if (state == 2)
+    {
+        state = 0;
+        myoungja.emo_code_prev = MIC_WAITING_EYE;
+    }
+    
 }
 
 
