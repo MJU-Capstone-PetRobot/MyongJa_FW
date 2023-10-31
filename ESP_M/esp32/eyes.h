@@ -216,7 +216,7 @@ void movingEyes() {
 
             digitalWrite(RIGHT_EYE, 0);
             img.pushImage(0, 0, 240, 240, bot_left_R);
-            img.pushSprite(0, 0);a
+            img.pushSprite(0, 0);
             digitalWrite(RIGHT_EYE, 1);
             break;
         default :

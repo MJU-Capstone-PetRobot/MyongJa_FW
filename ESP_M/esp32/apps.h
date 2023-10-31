@@ -48,32 +48,51 @@ void init_default_value() {
   memset(&myoungja, 0, sizeof(myoungja));
 }
 
-void send_to_opi() {
-  for (;;) {
-    
-    if (myoungja.touch != myoungja.touch_prev) {
-      Serial.printf("<T^%s>\n", String(myoungja.touch));
+void send_to_opi() 
+{
+    static uint32_t time_cur = 0;
+    static uint32_t time_prev[5] = {0, };
 
+    time_cur = millis();
+
+    if (myoungja.touch != myoungja.touch_prev) 
+    {
+        Serial.printf("<T^%s>\n", String(myoungja.touch));
     }
 
-    // Send ultrasonic data
-    Serial.printf("<D^%s, %s>\n", myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
-    vTaskDelay(pdMS_TO_TICKS(ULTRASONIC_PERIOD_MS));
+    if((time_cur - time_prev[0]) > ULTRASONIC_PERIOD_MS)
+    {
+        // Send ultrasonic data
+        Serial.printf("<D^%s, %s>\n", myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
 
-    // Send battery data
-    Serial.printf("<B^%s>\n", myoungja.bat_percent);
-    Serial.printf("<BD^%s>\n", myoungja.bat_time);
-    vTaskDelay(pdMS_TO_TICKS(BAT_PERIOD_MS));
+        time_prev[0] = time_cur;
+    }
 
-    // Send CO data
-    myoungja.co_ppm = read_mq7();
-    Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
-    vTaskDelay(pdMS_TO_TICKS(CO_PERIOD_MS));
+    if((time_cur - time_prev[1]) > BAT_PERIOD_MS)
+    {
+        // Send battery data
+        Serial.printf("<B^%s>\n", myoungja.bat_percent);
+        Serial.printf("<BD^%s>\n", myoungja.bat_time);
 
-    // Send GPS data
-    Serial.printf("<G^%s, %s>\n", myoungja.gps[0], myoungja.gps[1]);
-    vTaskDelay(pdMS_TO_TICKS(GPS_PERIOD_MS));
-  }
+        time_prev[1] = time_cur;
+    }
+
+    if((time_cur - time_prev[2]) > CO_PERIOD_MS)
+    {
+        // Send CO data
+        myoungja.co_ppm = read_mq7();
+        Serial.printf("<C^%s>\n", String(myoungja.co_ppm));
+
+        time_prev[2] = time_cur;
+    }
+
+    if((time_cur - time_prev[3]) > GPS_PERIOD_MS)
+    {
+        // Send GPS data
+        Serial.printf("<G^%s, %s>\n", myoungja.gps[0], myoungja.gps[1]);
+
+        time_prev[3] = time_cur;
+    }
 }
 
 
@@ -170,10 +189,12 @@ void receive_from_opi() {
   }
 }
 
-void receive_from_esp_s() {
+void receive_from_esp_s() 
+{
     if (Serial2.available() <= 0) return;
 
     char ch = Serial2.read();
+
     static char rx_str[MAX_STRING_SIZE] = {0};
     static int rx_index = 0;  // We'll use this instead of strlen to append characters
     static bool sof = false;
