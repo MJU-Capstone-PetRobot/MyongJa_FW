@@ -231,7 +231,7 @@ void receive_from_esp_s()
             while (token != NULL && cnt < 2) {
                 strncpy(ultrasonic_temp[cnt], token, MAX_STRING_SIZE);
                 cnt++;
-                token = strtok(NULL, ",");
+                token = strtok(NULL, "}");
             }
 
             if (cnt < 2) {
@@ -256,7 +256,7 @@ void receive_from_esp_s()
             while (token != NULL && cnt < 2) {
                 strncpy(gps_temp[cnt], token, MAX_STRING_SIZE);
                 cnt++;
-                token = strtok(NULL, ",");
+                token = strtok(NULL, "}");
             }
 
             if (cnt < 2) {
