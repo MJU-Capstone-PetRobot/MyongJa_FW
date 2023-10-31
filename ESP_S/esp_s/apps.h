@@ -5,6 +5,7 @@
 
 ACS37800 mySensor;
 TinyGPSPlus gps;
+
 EspSoftwareSerial::UART GPS;
 EspSoftwareSerial::UART ESP_M;
 
@@ -14,6 +15,10 @@ typedef struct
   float Longitude;
   uint16_t distance1;
   uint16_t distance2;
+
+  float volts;
+  float amps;
+  float watts;
 
   String bat_percent;
   String bat_hour;
@@ -45,19 +50,25 @@ float calculateBatteryPercentage (float volts)
   float Vmin = 30.0;
   float Vmax = 42.0;
   float percentage = (volts - Vmin) / (Vmax - Vmin) * 100;
+  
   return constrain(percentage, 0, 100);
 }
 
 String displayBatteryDuration (float watts)
 {
-  float batteryCapacityWh = 36.0 * 15.0; // 36V, 15Ah
-  float batteryDurationHours = batteryCapacityWh / watts; // hours
+    float batteryCapacityWh = 36.0 * 15.0; // 36V, 15Ah
+    float batteryDurationHours = batteryCapacityWh / watts; // hours
 
-  int hours = (int)batteryDurationHours;
-  int minutes = (batteryDurationHours - hours) * 60;
+    int hours = (int)batteryDurationHours;
+    int minutes = (batteryDurationHours - hours) * 60;
 
-  Serial.printf("Battery can last : %dh %dm\n", hours, minutes);
+    if(hours > 99 || hours < 0) hours = 99;
+    if(minutes > 99 || minutes < 0) minutes = 99;
+    
+
+  // Serial.printf("Battery can last : %dh %dm\n", hours, minutes);
   String duration = String(hours) + "h " + String(minutes) + "m";
+
   return duration;
 }
 
@@ -107,10 +118,9 @@ void receive_from_ultrasonic_1()
         if(cs == data_buf[3])
         {
           distance = (data_buf[1] << 8) + data_buf[2];
+
           myoungja.distance1 = distance;
-          Serial.print("1 distance : ");
-          Serial.print(distance/10);
-          Serial.println(" cm");
+
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -161,10 +171,9 @@ void receive_from_ultrasonic_2()
         if(cs == data_buf[3])
         {
           distance = (data_buf[1] << 8) + data_buf[2];
+
           myoungja.distance2 = distance;
-          Serial.print("2 distance : ");
-          Serial.print(distance/10);
-          Serial.println(" cm");
+
           i = 1;
           header = false;
           for(int j=0; j<4; j++)
@@ -191,8 +200,6 @@ void receive_from_ultrasonic_2()
   }
 }
 
-float volts, amps, watts;
-
 void send_to_ESP_M()
 {
   static uint32_t time_cur = 0;
@@ -203,27 +210,31 @@ void send_to_ESP_M()
   if((time_cur - time_old[0]) > 100)
   {
     // 초음파 센서
-    // String packet = "*D^";
-    // packet += String(myoungja.distance1);
-    // packet += String(myoungja.distance2);
-    // packet += "*\n";
-
-    // ESP_M.print(packet);
-    ESP_M.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
+    // ESP_M.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
+    Serial.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
     time_old[0] = time_cur;
   }
 
-  if((time_cur - time_old[1]) > 1000)
+  if((time_cur - time_old[1]) > 3000)
   {
     // 배터리 잔량 및 지속 시간
-    myoungja.bat_percent = calculateBatteryPercentage(volts);
-    myoungja.bat_hour = displayBatteryDuration(watts);
-    ESP_M.printf("{B^%s}\n", String(myoungja.bat_percent));
-    ESP_M.printf("{BD^%s}\n", String(myoungja.bat_hour));
+    myoungja.bat_percent = calculateBatteryPercentage(myoungja.volts);
+    myoungja.bat_hour = displayBatteryDuration(myoungja.watts);
+    // ESP_M.printf("{B^%s}\n", String(myoungja.bat_percent));
+    // ESP_M.printf("{BD^%s}\n", String(myoungja.bat_hour));
 
-    // GPS
-    ESP_M.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
+    Serial.printf("{B^%s}\n", myoungja.bat_percent);
+    Serial.printf("{BD^%s}\n", myoungja.bat_hour);
 
     time_old[1] = time_cur;
+  }
+
+  if((time_cur - time_old[2]) > 5000)
+  {
+    // GPS
+    // ESP_M.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
+    Serial.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
+
+    time_old[2] = time_cur;
   }
 }
