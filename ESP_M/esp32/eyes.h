@@ -501,7 +501,6 @@ void displayEyes(int eyes)
         default:
             break;
     }
-    vTaskDelay(5 / portTICK_PERIOD_MS);
 }
 
 #endif

@@ -40,7 +40,9 @@ void DisplaySensorTask(void *parameter) {
   {
     counter++;
     if (counter >= 400) { // 10 sec
+      myoungja.emo_code_prev = myoungja.emo_code;
       myoungja.emo_code = CLOSE_EYE;
+
       counter = 0;
     }
 

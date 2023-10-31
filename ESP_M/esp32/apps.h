@@ -176,7 +176,7 @@ void receive_from_opi() {
         else if (strcmp(token, "mic_waiting") == 0) myoungja.emo_code = MIC_WAITING_EYE;
         else error = true;
 
-        if (!error) myoungja.emo_code_prev = myoungja.emo_code;
+        // if (!error) myoungja.emo_code_prev = myoungja.emo_code;
       }
     }
     if (error) Serial.println("[ERROR]");
