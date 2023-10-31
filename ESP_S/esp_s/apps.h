@@ -6,8 +6,8 @@
 ACS37800 mySensor;
 TinyGPSPlus gps;
 
-EspSoftwareSerial::UART GPS;
-EspSoftwareSerial::UART ESP_M;
+EspSoftwareSerial::UART ultrasonic1;
+EspSoftwareSerial::UART ultrasonic2;
 
 typedef struct
 {
@@ -75,9 +75,9 @@ String displayBatteryDuration (float watts)
 /* GPS */
 void processGPSdata()
 {
-  while(GPS.available() > 0)
+  while(Serial1.available() > 0)
   {
-    if(gps.encode(GPS.read()))
+    if(gps.encode(Serial1.read()))
     {
       if(gps.location.isValid())
       {
@@ -102,9 +102,9 @@ void receive_from_ultrasonic_1()
   uint16_t cs, distance;
   static bool header = false;
 
-  if(Serial1.available())
+  if(ultrasonic1.available())
   {
-    ch = Serial1.read();
+    ch = ultrasonic1.read();
 
     if (header == true)
     {
@@ -155,9 +155,9 @@ void receive_from_ultrasonic_2()
   uint16_t cs, distance;
   static bool header = false;
 
-  if(Serial2.available())
+  if(ultrasonic2.available())
   {
-    ch = Serial2.read();
+    ch = ultrasonic2.read();
 
     if (header == true)
     {
@@ -211,7 +211,7 @@ void send_to_ESP_M()
   {
     // 초음파 센서
     // ESP_M.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
-    Serial.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
+    Serial2.printf("{D^%d,%d}\n", myoungja.distance1, myoungja.distance2);
     time_old[0] = time_cur;
   }
 
@@ -223,8 +223,8 @@ void send_to_ESP_M()
     // ESP_M.printf("{B^%s}\n", String(myoungja.bat_percent));
     // ESP_M.printf("{BD^%s}\n", String(myoungja.bat_hour));
 
-    Serial.printf("{B^%s}\n", myoungja.bat_percent);
-    Serial.printf("{BD^%s}\n", myoungja.bat_hour);
+    Serial2.printf("{B^%s}\n", myoungja.bat_percent);
+    Serial2.printf("{BD^%s}\n", myoungja.bat_hour);
 
     time_old[1] = time_cur;
   }
@@ -233,7 +233,7 @@ void send_to_ESP_M()
   {
     // GPS
     // ESP_M.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
-    Serial.printf("{G^%s,%s}\n", String(myoungja.Latitude), String(myoungja.Longitude));
+    Serial2.printf("{G^%.6f,%.6f}\n", myoungja.Latitude, myoungja.Longitude);
 
     time_old[2] = time_cur;
   }

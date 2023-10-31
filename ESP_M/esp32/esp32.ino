@@ -36,15 +36,16 @@ void ReceiveFromOPITask(void *parameter) {
 void DisplaySensorTask(void *parameter) {
   static int counter = 0;
 
-  while (true) 
+  while (1) 
   {
+    displayEyes(myoungja.emo_code);
+
     counter++;
     if (counter >= 400) {
       myoungja.emo_code = CLOSE_EYE;
       counter = 0;
     }
 
-    displayEyes(myoungja.emo_code);
     receive_from_touch();
     vTaskDelay(5 / portTICK_PERIOD_MS);
   }
