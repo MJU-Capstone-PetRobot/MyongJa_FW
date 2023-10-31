@@ -171,20 +171,16 @@ void closeEyes()
 void movingEyes() {
     static int state = 0;
 
-    if (myoungja.emo_code_prev != myoungja.emo_code)
+    state ++;
+    vTaskDelay(200 / portTICK_PERIOD_MS);
+    if (state == 3)
     {
-        state ++;
-        vTaskDelay(200 / portTICK_PERIOD_MS);
-        if (state == 3)
-        {
-          state = 0;
-          myoungja.emo_code_prev = MOVING_EYE;
+        state = 0;
+        myoungja.emo_code_prev = MOVING_EYE;
           
-          return ;
-        }
+        return ;
     }
-    
-    else return ;
+
 
     switch(state) {
         case 0 :
@@ -220,7 +216,7 @@ void movingEyes() {
 
             digitalWrite(RIGHT_EYE, 0);
             img.pushImage(0, 0, 240, 240, bot_left_R);
-            img.pushSprite(0, 0);
+            img.pushSprite(0, 0);a
             digitalWrite(RIGHT_EYE, 1);
             break;
         default :
