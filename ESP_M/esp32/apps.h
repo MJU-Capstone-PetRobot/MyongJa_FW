@@ -178,7 +178,7 @@ void receive_from_opi() {
 
   if ((sof == true) && (ch == ')')) {
     eof = true;
-    rx_str[rx_index] = '\0'
+    
   }
 
   if (sof && eof)  // 전체 패킷 수신 완료
