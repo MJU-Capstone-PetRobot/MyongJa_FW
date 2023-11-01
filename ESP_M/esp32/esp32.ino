@@ -5,7 +5,7 @@
 #define ID3 3
 #define ID4 4
 
-#define TOUCH (16)
+#define TOUCH (6)
 #define MQ_7 (17)
 
 #include <AX12A.h>

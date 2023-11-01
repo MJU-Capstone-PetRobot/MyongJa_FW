@@ -400,31 +400,6 @@ void dangerEyes()
 
   myoungja.emo_code_prev = DANGER_EYE;
 }
-
-
-void receive_from_touch()
-{
-    if (digitalRead(TOUCH) == HIGH)
-    {
-      myoungja.touch = true;
-    }
-    else
-    {
-      myoungja.touch = false;
-    }
-
-    if (myoungja.touch_prev == false && myoungja.touch == true)
-    {
-      myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code = WINK_EYE;
-    }
-    else if (myoungja.touch_prev == true && myoungja.touch == false)
-    {
-      myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code = myoungja.emo_code_prev;
-    }
-    vTaskDelay(20 / portTICK_PERIOD_MS);
-}
 void micWaitingEyes()
 {
     static int state = 0 ;

@@ -33,6 +33,8 @@ typedef struct
 
   bool touch;
   bool touch_prev;
+  bool send_to_opi_touch;
+
   int co_ppm;
 
   //Receive
@@ -57,6 +59,7 @@ void init_default_value() {
 
     myoungja.touch = 0;
     myoungja.touch_prev = 0;
+    myoungja.send_to_opi_touch = 0;
 
     myoungja.co_ppm = 0;
 
@@ -68,6 +71,31 @@ void init_default_value() {
     myoungja.emo_code_prev = DAILY_EYE;
 }
 
+void receive_from_touch()
+{
+    if (digitalRead(TOUCH) == HIGH)
+    {
+      myoungja.touch = true;
+    }
+    else
+    {
+      myoungja.touch = false;
+    }
+
+    if (myoungja.touch_prev == false && myoungja.touch == true)
+    {
+      myoungja.touch_prev = myoungja.touch;
+      myoungja.send_to_opi_touch = true;
+      myoungja.emo_code = WINK_EYE;
+    }
+    else if (myoungja.touch_prev == true && myoungja.touch == false)
+    {
+      myoungja.touch_prev = myoungja.touch;
+      myoungja.send_to_opi_touch = true;
+      myoungja.emo_code = myoungja.emo_code_prev;
+    }
+}
+
 void send_to_opi() 
 {
     static uint32_t time_cur = 0;
@@ -75,9 +103,10 @@ void send_to_opi()
 
     time_cur = millis();
 
-    if (myoungja.touch != myoungja.touch_prev) 
+    if (myoungja.send_to_opi_touch) 
     {
         Serial.printf("<T^%s>\n", String(myoungja.touch));
+        myoungja.send_to_opi_touch = false;
     }
 
     if((time_cur - time_prev[0]) > ULTRASONIC_PERIOD_MS)
