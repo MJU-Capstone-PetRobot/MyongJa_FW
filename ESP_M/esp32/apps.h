@@ -190,19 +190,19 @@ void receive_from_opi() {
     {
       token = strtok(rx_str + 3, ",");
       int cnt = 0;
-      while (token != NULL && cnt < 3) {
+      while (token != NULL && cnt < 4) {
         myoungja.RPZ[cnt] = atof(token);
         Serial.printf("%s/n", token);  // Printing the token
         cnt++;
         token = strtok(NULL, ",");
       }
-      if (cnt < 3)  // If we didn't get all three values
+      if (cnt < 4)  // If we didn't get all three values
       {
         error = true;
         Serial.println("[ERROR]");
       } 
       else {
-        move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2]);
+        move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2],myoungja.RPZ[3]);
         
       }
     } else if (rx_str[1] == 'E') {
