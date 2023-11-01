@@ -112,7 +112,7 @@ void send_to_opi()
     if((time_cur - time_prev[0]) > ULTRASONIC_PERIOD_MS)
     {
         // Send ultrasonic data
-        Serial.printf("<D^%s, %s>\n", myoungja.ultrasonic[0], myoungja.ultrasonic[1]);
+        Serial.printf("<D^%s, %s>\n", myoungja.ultrasonic[1], myoungja.ultrasonic[0]); // 앞 뒤 반대
 
         time_prev[0] = time_cur;
     }
