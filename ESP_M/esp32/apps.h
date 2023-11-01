@@ -38,7 +38,7 @@ typedef struct
   int co_ppm;
 
   //Receive
-  float RPZ[3];
+  float RPZ[4];
   EYE_TYPE emo_code;
   EYE_TYPE emo_code_prev;
 
@@ -178,6 +178,7 @@ void receive_from_opi() {
 
   if ((sof == true) && (ch == ')')) {
     eof = true;
+    rx_str[rx_index] = '\0'
   }
 
   if (sof && eof)  // 전체 패킷 수신 완료

@@ -39,6 +39,7 @@ int L1_a, L2_a, L3_a;
 float angle, theta, phi;
 float k;  // Motor coordinate radius
 int angle_step;
+int yaw_step;
 
 
 void init_neck_position() {

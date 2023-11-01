@@ -69,7 +69,7 @@ void setup() {
   ax12a.begin(BaudRate, DirectionPin, &Serial1);
   delay(200);
   init_neck_position();
-  move_neck(0, 0, 80);
+  move_neck(0, 0, 80, 0);
 
   /* ESP_M - ESP_S 통신 */
   Serial2.begin(115200, SERIAL_8N1, 40, 39); // UART RX(40), TX(39)
