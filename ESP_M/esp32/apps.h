@@ -45,7 +45,27 @@ typedef struct
 ESP32_DATA myoungja;
 
 void init_default_value() {
-  memset(&myoungja, 0, sizeof(myoungja));
+
+    strncpy(myoungja.ultrasonic[0], "0", MAX_STRING_SIZE);
+    strncpy(myoungja.ultrasonic[1], "0", MAX_STRING_SIZE);
+
+    strncpy(myoungja.bat_percent, "0%", MAX_STRING_SIZE);
+    strncpy(myoungja.bat_time, "0h 0m", MAX_STRING_SIZE);
+
+    strncpy(myoungja.gps[0], "0.000000", MAX_STRING_SIZE);
+    strncpy(myoungja.gps[1], "0.000000", MAX_STRING_SIZE);
+
+    myoungja.touch = 0;
+    myoungja.touch_prev = 0;
+
+    myoungja.co_ppm = 0;
+
+    myoungja.RPZ[0] = 0.0;
+    myoungja.RPZ[1] = 0.0;
+    myoungja.RPZ[2] = 0.0;
+
+    myoungja.emo_code = DAILY_EYE;
+    myoungja.emo_code_prev = DAILY_EYE;
 }
 
 void send_to_opi() 

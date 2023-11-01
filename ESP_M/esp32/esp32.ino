@@ -79,8 +79,6 @@ void setup() {
   initEyes();
   delay(100);
   displayEyes(DAILY_EYE);
-  myoungja.emo_code = DAILY_EYE;
-  myoungja.emo_code_prev = DAILY_EYE;
 
   /* MQ-7 일산화탄소 센서 */
   init_mq7();
