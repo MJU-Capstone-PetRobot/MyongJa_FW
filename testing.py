@@ -14,13 +14,13 @@ def send_oscillating_data(serial_port):
     while True:
         val1 = get_oscillating_value(0.5)  # Adjust frequency as needed
         val2 = get_oscillating_value(0.7)  # Slightly different frequency for variation
-        data = f"(N^{val1:.2f},0,70)"  # Formatting the float to 2 decimal places
+        data = f"(N^{val1:.2f},0,0,70)"  # Formatting the float to 2 decimal places
         serial_port.write(data.encode())
         print(f"Sent: {data}")
         time.sleep(0.03)  # Send data every 30ms hz = 1/0.03 = 33.33
 
 if __name__ == "__main__":
-    port = "COM6"  # For Windows
+    port = "COM19"  # For Windows
     baudrate = 1000000  # Adjust as needed
 
     with serial.Serial(port, baudrate, timeout=1) as ser:

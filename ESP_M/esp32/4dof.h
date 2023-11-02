@@ -125,7 +125,7 @@ void move_neck(float _theta, float _phi, float _y_set, float _z_set) {
     L1_a = step_transform(l1.magnitude());
     L2_a = step_transform(l2.magnitude());
     L3_a = step_transform(l3.magnitude());
-    yaw_step = map(_y_set, -3.14, 3.14, 0, 1023);
+    int yaw_step = map(_y_set, -3.14, 3.14, 0, 1023);
 
     ax12a.moveSpeed(ID1, L1_a,250);
     ax12a.moveSpeed(ID2, L2_a,250);
