@@ -35,7 +35,7 @@
 #include "./emo/mic_waiting2.h"
 
 
-#define LEFT_EYE  10
+#define LEFT_EYE  16
 #define RIGHT_EYE 12
 
 
@@ -73,15 +73,20 @@ void initEyes()
 
 void dailyEyes()
 {
-    digitalWrite(LEFT_EYE, 0);
-    img.pushImage(0, 0, 240, 240, daily_L);
-    img.pushSprite(0, 0);
-    digitalWrite(LEFT_EYE, 1);
+    if(myoungja.emo_code_prev != DAILY_EYE && myoungja.emo_code == DAILY_EYE)
+    {
+        digitalWrite(LEFT_EYE, 0);
+        img.pushImage(0, 0, 240, 240, daily_L);
+        img.pushSprite(0, 0);
+        digitalWrite(LEFT_EYE, 1);
 
-    digitalWrite(RIGHT_EYE, 0);
-    img.pushImage(0, 0, 240, 240, daily_R);
-    img.pushSprite(0, 0);
-    digitalWrite(RIGHT_EYE, 1);
+        digitalWrite(RIGHT_EYE, 0);
+        img.pushImage(0, 0, 240, 240, daily_R);
+        img.pushSprite(0, 0);
+        digitalWrite(RIGHT_EYE, 1);
+
+        myoungja.emo_code_prev = myoungja.emo_code;
+    }
 }
 
 void closeEyes()

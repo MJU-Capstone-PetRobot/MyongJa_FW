@@ -37,10 +37,11 @@ typedef struct
 
   int co_ppm;
 
-  EYE_TYPE emo_code;
-  EYE_TYPE emo_code_prev;
   //Receive
   float RPYZ[4];
+
+  EYE_TYPE emo_code;
+  EYE_TYPE emo_code_prev;
 
 } ESP32_DATA;
 
@@ -63,9 +64,9 @@ void init_default_value() {
 
     myoungja.co_ppm = 0;
 
+    myoungja.emo_code_prev = NULL_EYE;
     myoungja.emo_code = DAILY_EYE;
-    myoungja.emo_code_prev = DAILY_EYE;
-    
+
     myoungja.RPYZ[0] = 0.0;
     myoungja.RPYZ[1] = 0.0;
     myoungja.RPYZ[2] = 0.0;
@@ -203,16 +204,18 @@ void receive_from_opi() {
             else
                 token = strtok(NULL, ",");
         }
-        if (cnt < 4)  // If we didn't get all three values
+
+        if(cnt == 4)
+        {
+            Serial.println();
+            move_neck(myoungja.RPYZ[0], myoungja.RPYZ[1], myoungja.RPYZ[2],myoungja.RPYZ[3]);
+        }
+        else if (cnt < 4)  // If we didn't get all three values
         {
             error = true;
             Serial.println("[ERROR]");
         } 
-        else 
-        {
-            move_neck(myoungja.RPYZ[0], myoungja.RPYZ[1], myoungja.RPYZ[2],myoungja.RPYZ[3]);
-        }
-    } 
+    }
     else if (rx_str[1] == 'E') 
     {
 
