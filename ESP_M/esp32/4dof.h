@@ -96,6 +96,7 @@ int cal_yawstep(float yaw) {
 
 
 void move_neck(float _theta, float _phi, float _y_set, float _z_set) {
+
   // Directly update the current positions to the targets
   current_theta = _theta;
   current_phi = _phi;
@@ -116,4 +117,5 @@ void move_neck(float _theta, float _phi, float _y_set, float _z_set) {
   ax12a.moveSpeed(ID1, L1_a,100);
   ax12a.moveSpeed(ID2, L2_a,100);
   ax12a.moveSpeed(ID3, L3_a,100);
+
 }

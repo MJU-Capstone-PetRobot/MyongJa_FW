@@ -38,7 +38,10 @@ typedef struct
   int co_ppm;
 
   //Receive
-  float RPZ[4];
+
+  float RPYZ[4];
+
+
   EYE_TYPE emo_code;
   EYE_TYPE emo_code_prev;
 
@@ -63,12 +66,14 @@ void init_default_value() {
 
     myoungja.co_ppm = 0;
 
-    myoungja.RPZ[0] = 0.0;
-    myoungja.RPZ[1] = 0.0;
-    myoungja.RPZ[2] = 0.0;
-
+    myoungja.emo_code_prev = NULL_EYE;
     myoungja.emo_code = DAILY_EYE;
-    myoungja.emo_code_prev = DAILY_EYE;
+
+    myoungja.RPYZ[0] = 0.0;
+    myoungja.RPYZ[1] = 0.0;
+    myoungja.RPYZ[2] = 0.0;
+    myoungja.RPYZ[3] = 0.0;
+
 }
 
 void receive_from_touch()
@@ -189,24 +194,33 @@ void receive_from_opi() {
     char* token;
     if (rx_str[1] == 'N')  // 목 제어 패킷
     {
-      token = strtok(rx_str + 3, ",");
-      int cnt = 0;
-      while (token != NULL && cnt < 4) {
-        myoungja.RPZ[cnt] = atof(token);
-        Serial.printf("%s/n", token);  // Printing the token
-        cnt++;
-        token = strtok(NULL, ",");
-      }
-      if (cnt < 4)  // If we didn't get all three values
-      {
-        error = true;
-        Serial.println("[ERROR]");
-      } 
-      else {
-        move_neck(myoungja.RPZ[0], myoungja.RPZ[1], myoungja.RPZ[2],myoungja.RPZ[3]);
-        
-      }
-    } else if (rx_str[1] == 'E') {
+        token = strtok(rx_str + 3, ",");
+        int cnt = 0;
+        while (token != NULL && cnt < 4) 
+        {
+            myoungja.RPYZ[cnt] = atof(token);
+            Serial.printf("[%s]", token);  // Printing the token
+            cnt++;
+
+            if(cnt == 3)
+                token = strtok(NULL, ")");
+            else
+                token = strtok(NULL, ",");
+        }
+
+        if(cnt == 4)
+        {
+            Serial.println();
+            move_neck(myoungja.RPYZ[0], myoungja.RPYZ[1], myoungja.RPYZ[2],myoungja.RPYZ[3]);
+        }
+        else if (cnt < 4)  // If we didn't get all three values
+        {
+            error = true;
+            Serial.println("[ERROR]");
+        } 
+    }
+    else if (rx_str[1] == 'E') 
+    {
 
       token = strtok(rx_str + 3, ")");
 
