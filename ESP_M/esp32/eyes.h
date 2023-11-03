@@ -233,15 +233,18 @@ void movingEyes() {
 
 void winkEyes()
 {
-    digitalWrite(LEFT_EYE, 0);
-    img.pushImage(0, 0, 240, 240, wink_L);
-    img.pushSprite(0, 0);
-    digitalWrite(LEFT_EYE, 1);
+    if(myoungja.emo_code_prev != WINK_EYE && myoungja.emo_code == WINK_EYE)
+    {
+        digitalWrite(LEFT_EYE, 0);
+        img.pushImage(0, 0, 240, 240, wink_L);
+        img.pushSprite(0, 0);
+        digitalWrite(LEFT_EYE, 1);
 
-    digitalWrite(RIGHT_EYE, 0);
-    img.pushImage(0, 0, 240, 240, wink_R);
-    img.pushSprite(0, 0);
-    digitalWrite(RIGHT_EYE, 1);
+        digitalWrite(RIGHT_EYE, 0);
+        img.pushImage(0, 0, 240, 240, wink_R);
+        img.pushSprite(0, 0);
+        digitalWrite(RIGHT_EYE, 1);
+    }
 }
 
 void angryEyes()

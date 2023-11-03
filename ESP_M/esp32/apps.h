@@ -90,14 +90,16 @@ void receive_from_touch()
     if (myoungja.touch_prev == false && myoungja.touch == true)
     {
       myoungja.touch_prev = myoungja.touch;
-      myoungja.send_to_opi_touch = true;
+      myoungja.emo_code_prev = myoungja.emo_code;
       myoungja.emo_code = WINK_EYE;
+      myoungja.send_to_opi_touch = true;
     }
     else if (myoungja.touch_prev == true && myoungja.touch == false)
     {
       myoungja.touch_prev = myoungja.touch;
-      myoungja.send_to_opi_touch = true;
       myoungja.emo_code = myoungja.emo_code_prev;
+      myoungja.emo_code_prev = WINK_EYE;
+      myoungja.send_to_opi_touch = true;
     }
 }
 

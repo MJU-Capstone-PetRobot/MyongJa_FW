@@ -55,71 +55,70 @@ void DisplaySensorTask(void *parameter) {
 
 void setup() {
 
-    init_default_value();
+  init_default_value();
 
-    /* OPI - ESP 통신 */
-    Serial.begin(1000000);  // OPI : UART0
-    delay(100);
+  /* OPI - ESP 통신 */
+  Serial.begin(1000000);  // OPI : UART0
+  delay(100);
 
-    Serial.println("************************************");
-    Serial.println("**** [2023-11-03] ESP32_M board ****");
-    Serial.println("************************************");
+  Serial.println("************************************");
+  Serial.println("**** [2023-11-03] ESP32_M board ****");
+  Serial.println("************************************");
 
-    /* 목 서보모터 통신 */
-      /* ESP_M - ESP_S 통신 */
-    Serial2.begin(115200, SERIAL_8N1, 40, 39); // UART RX(40), TX(39)
-    delay(100);
-    delay(200);
-    init_neck_position();
-    move_neck(0, 0, 0, 80);
+  /* 목 서보모터 통신 */
+  Serial1.begin(1000000, SERIAL_8N1, 2, 1);  // UART RX(2), TX(1)
+  ax12a.begin(BaudRate, DirectionPin, &Serial1);
+  delay(200);
+  init_neck_position();
+  move_neck(0, 0, 0, 80);
 
-    /* ESP_M - ESP_S 통신 */
-    Serial2.begin(115200, SERIAL_8N1, 40, 39); // UART RX(40), TX(39)
-    delay(100);
+  /* ESP_M - ESP_S 통신 */
+  Serial2.begin(115200, SERIAL_8N1, 40, 39); // UART RX(40), TX(39)
+  delay(100);
 
-    /* 디스플레이 SPI 통신 */
-    initEyes();
-    delay(100);
+  /* 디스플레이 SPI 통신 */
+  initEyes();
+  delay(100);
 
-    /* MQ-7 일산화탄소 센서 */
-    init_mq7();
+  /* MQ-7 일산화탄소 센서 */
+  init_mq7();
 
-    /* 터치 센서 핀 초기화 */
-    pinMode(TOUCH, INPUT);
-    myoungja.touch_prev = false;
+  /* 터치 센서 핀 초기화 */
+  pinMode(TOUCH, INPUT);
+  myoungja.touch_prev = false;
 
-    /* 초기화 완료 */
-    neopixelWrite(RGB_BUILTIN,25,25,25);
-    Serial.println("*************** Setup Done ****************");
+  /* 초기화 완료 */
+  neopixelWrite(RGB_BUILTIN,25,25,25);
+  Serial.println("*************** Setup Done ****************");
 
-    /* RTOS TASK 등록 - CORE 0 */
-    xTaskCreatePinnedToCore(
-        ReceiveFromOPITask,   /* Task function. */
-        "ReceiveFromOPITask", /* name of task. */
-        10000,                /* Stack size of task */
-        NULL,                 /* parameter of the task */
-        1,                    /* priority of the task */
-        NULL,                 /* We don't need the task handle */
-        0);                   /* pin task to core 0 */
+  /* RTOS TASK 등록 - CORE 0 */
+  xTaskCreatePinnedToCore(
+    ReceiveFromOPITask,   /* Task function. */
+    "ReceiveFromOPITask", /* name of task. */
+    10000,                /* Stack size of task */
+    NULL,                 /* parameter of the task */
+    1,                    /* priority of the task */
+    NULL,                 /* We don't need the task handle */
+    0);                   /* pin task to core 0 */
 
-    /* RTOS TASK 등록 - CORE 1 */
-    xTaskCreatePinnedToCore(
-        DisplaySensorTask,
-        "DisplaySensorTask",
-        10000,
-        NULL,
-        1,
-        &DisplayTaskHandle,
-        1);  // pin task to core 1
+  /* RTOS TASK 등록 - CORE 1 */
+  xTaskCreatePinnedToCore(
+    DisplaySensorTask,
+    "DisplaySensorTask",
+    10000,
+    NULL,
+    1,
+    &DisplayTaskHandle,
+    1);  // pin task to core 1
 
-    xTaskCreatePinnedToCore(
-        CommsTask,        /* Task function. */
-        "CommsTask",      /* name of task. */
-        10000,            /* Stack size of task */
-        NULL,             /* parameter of the task */
-        2,                /* priority of the task */
-        &CommsTaskHandle, /* Task handle to keep track of created task */
-        1);               /* pin task to core 1 */
+  xTaskCreatePinnedToCore(
+    CommsTask,        /* Task function. */
+    "CommsTask",      /* name of task. */
+    10000,            /* Stack size of task */
+    NULL,             /* parameter of the task */
+    2,                /* priority of the task */
+    &CommsTaskHandle, /* Task handle to keep track of created task */
+    1);               /* pin task to core 1 */
 
 }
 
