@@ -12,7 +12,6 @@
 
 typedef enum {
   NULL_EYE,
-  CLOSE_EYE,
   MOVING_EYE,
   WINK_EYE,
   ANGRY_EYE,
@@ -38,12 +37,11 @@ typedef struct
   int co_ppm;
 
   //Receive
-
   float RPYZ[4];
-
 
   EYE_TYPE emo_code;
   EYE_TYPE emo_code_prev;
+  bool emo_close_flag;
 
 } ESP32_DATA;
 
@@ -68,6 +66,7 @@ void init_default_value() {
 
     myoungja.emo_code_prev = NULL_EYE;
     myoungja.emo_code = DAILY_EYE;
+    myoungja.emo_close_flag = false;
 
     myoungja.RPYZ[0] = 0.0;
     myoungja.RPYZ[1] = 0.0;
@@ -93,15 +92,13 @@ void receive_from_touch()
     if (myoungja.touch_prev == false && myoungja.touch == true)
     {
       myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code_prev = myoungja.emo_code;
       myoungja.emo_code = WINK_EYE;
       myoungja.send_to_opi_touch = true;
     }
     else if (myoungja.touch_prev == true && myoungja.touch == false)
     {
       myoungja.touch_prev = myoungja.touch;
-      myoungja.emo_code = myoungja.emo_code_prev;
-      myoungja.emo_code_prev = WINK_EYE;
+      myoungja.emo_code = DAILY_EYE;
       myoungja.send_to_opi_touch = true;
     }
 }
@@ -239,7 +236,6 @@ void receive_from_opi() {
         else if (strcmp(token, "sad") == 0) myoungja.emo_code = SAD_EYE;
         else if (strcmp(token, "angry") == 0) myoungja.emo_code = ANGRY_EYE;
         else if (strcmp(token, "moving") == 0) myoungja.emo_code = MOVING_EYE;
-        else if (strcmp(token, "blink") == 0) myoungja.emo_code = CLOSE_EYE;
         else if (strcmp(token, "low_bat") == 0) myoungja.emo_code = BAT_EYE;
         else if (strcmp(token, "danger") == 0) myoungja.emo_code = DANGER_EYE;
         else if (strcmp(token, "mic_waiting") == 0) myoungja.emo_code = MIC_WAITING_EYE;

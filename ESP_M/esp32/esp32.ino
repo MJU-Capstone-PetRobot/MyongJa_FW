@@ -34,16 +34,25 @@ void ReceiveFromOPITask(void *parameter) {
 
 
 void DisplaySensorTask(void *parameter) {
-  static int counter = 0;
+    static uint32_t time_cur = 0;
+    static uint32_t time_prev[5] = {0, };
+
 
   while (1) 
   {
-    counter++;
-    if (counter >= 2000) { // 10 sec
-      myoungja.emo_code_prev = myoungja.emo_code;
-      myoungja.emo_code = CLOSE_EYE;
+    time_cur = millis();
 
-      counter = 0;
+    if((time_cur - time_prev[0]) >= 10000) // 10 sec
+    {
+        if(myoungja.emo_code == DAILY_EYE) myoungja.emo_close_flag = true;
+        
+        time_prev[0] = time_cur;
+    }
+
+    if((time_cur - time_prev[1]) >= 1000) // 1 sec
+    {
+        Serial.printf("emo %d, emo_prev %d \n", myoungja.emo_code, myoungja.emo_code_prev);
+        time_prev[1] = time_cur;
     }
 
     displayEyes(myoungja.emo_code);

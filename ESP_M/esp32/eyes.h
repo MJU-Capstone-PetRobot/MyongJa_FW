@@ -73,20 +73,17 @@ void initEyes()
 
 void dailyEyes()
 {
-    if(myoungja.emo_code_prev != DAILY_EYE && myoungja.emo_code == DAILY_EYE)
-    {
-        digitalWrite(LEFT_EYE, 0);
-        img.pushImage(0, 0, 240, 240, daily_L);
-        img.pushSprite(0, 0);
-        digitalWrite(LEFT_EYE, 1);
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
 
-        digitalWrite(RIGHT_EYE, 0);
-        img.pushImage(0, 0, 240, 240, daily_R);
-        img.pushSprite(0, 0);
-        digitalWrite(RIGHT_EYE, 1);
-
-        myoungja.emo_code_prev = myoungja.emo_code;
-    }
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, daily_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+        
+    myoungja.emo_code_prev = DAILY_EYE;
 }
 
 void closeEyes()
@@ -165,8 +162,7 @@ void closeEyes()
     if(state == 10)
     {
         state = 0;
-        myoungja.emo_code = myoungja.emo_code_prev;
-        myoungja.emo_code_prev = CLOSE_EYE;
+        myoungja.emo_close_flag = false;
     }
 
     vTaskDelay(100 / portTICK_PERIOD_MS);
@@ -175,17 +171,6 @@ void closeEyes()
 
 void movingEyes() {
     static int state = 0;
-
-    state ++;
-    vTaskDelay(200 / portTICK_PERIOD_MS);
-    if (state == 3)
-    {
-        state = 0;
-        myoungja.emo_code_prev = MOVING_EYE;
-          
-        return ;
-    }
-
 
     switch(state) {
         case 0 :
@@ -228,43 +213,46 @@ void movingEyes() {
             break;
     }
 
+    state ++;
+    vTaskDelay(200 / portTICK_PERIOD_MS);
+    if (state == 3)
+    {
+        state = 0;
+        myoungja.emo_code_prev = NULL_EYE;
+        return;
+    }
 }
 
 
 void winkEyes()
 {
-    if(myoungja.emo_code_prev != WINK_EYE && myoungja.emo_code == WINK_EYE)
-    {
-        digitalWrite(LEFT_EYE, 0);
-        img.pushImage(0, 0, 240, 240, wink_L);
-        img.pushSprite(0, 0);
-        digitalWrite(LEFT_EYE, 1);
+    digitalWrite(LEFT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_L);
+    img.pushSprite(0, 0);
+    digitalWrite(LEFT_EYE, 1);
 
-        digitalWrite(RIGHT_EYE, 0);
-        img.pushImage(0, 0, 240, 240, wink_R);
-        img.pushSprite(0, 0);
-        digitalWrite(RIGHT_EYE, 1);
-    }
+    digitalWrite(RIGHT_EYE, 0);
+    img.pushImage(0, 0, 240, 240, wink_R);
+    img.pushSprite(0, 0);
+    digitalWrite(RIGHT_EYE, 1);
+    
+    myoungja.emo_code_prev = WINK_EYE;
 }
 
 void angryEyes()
 {
     static int state = 0;
 
-    if (myoungja.emo_code != myoungja.emo_code_prev)
+    state ++;
+    vTaskDelay(200 / portTICK_PERIOD_MS);
+
+    if (state == 3)
     {
-        state ++;
-        vTaskDelay(200 / portTICK_PERIOD_MS);
+        state = 0;
+        myoungja.emo_code_prev = ANGRY_EYE;
 
-        if (state == 3)
-        {
-          state = 0;
-          myoungja.emo_code_prev = ANGRY_EYE;
-
-          return;
-        }
+        return;
     }
-    else return ;
 
     switch(state)
     {
@@ -304,19 +292,14 @@ void sadEyes()
 {
     static int state = 0;
 
-    if (myoungja.emo_code != myoungja.emo_code_prev)
+    state ++;
+    vTaskDelay(100 / portTICK_PERIOD_MS);
+    if (state == 3)
     {
-        state ++;
-        vTaskDelay(100 / portTICK_PERIOD_MS);
-        if (state == 3)
-        {
-          state = 0;
-          myoungja.emo_code_prev = SAD_EYE;
-
-          return ;
-        }
+        state = 0;
+        myoungja.emo_code_prev = SAD_EYE;
+        return;
     }
-    else return ;
 
     switch(state)
     {
@@ -388,11 +371,10 @@ void batteryEyes()
     if (state == 2)
     {
         state = 0;
-        myoungja.emo_code_prev = BAT_EYE;
+        myoungja.emo_code_prev = NULL_EYE;
     }
 
 }
-
 
 void dangerEyes()
 {
@@ -444,45 +426,49 @@ void micWaitingEyes()
     if (state == 2)
     {
         state = 0;
-        myoungja.emo_code_prev = MIC_WAITING_EYE;
+        myoungja.emo_code_prev = NULL_EYE;
     }
-    
 }
 
 
 void displayEyes(int eyes)
 {
-    switch(eyes)
+    if(myoungja.emo_close_flag)
     {
-        case CLOSE_EYE:
-            closeEyes();
-            break;
-        case MOVING_EYE:
-            movingEyes();
-            break;
-        case WINK_EYE:
-            winkEyes();
-            break;            
-        case ANGRY_EYE:
-            angryEyes();
-            break;
-        case SAD_EYE:
-            sadEyes();
-            break;
-        case DAILY_EYE:
-            dailyEyes();
-            break;
-        case BAT_EYE:
-            batteryEyes();
-            break;
-        case DANGER_EYE:
-            dangerEyes();
-            break;
-        case MIC_WAITING_EYE:
-            micWaitingEyes();
-            break;
-        default:
-            break;
+        closeEyes();
+        return;
+    }
+    else if(myoungja.emo_code_prev != myoungja.emo_code)
+    {
+        switch(eyes)
+        {
+            case MOVING_EYE:
+                movingEyes();
+                break;
+            case WINK_EYE:
+                winkEyes();
+                break;            
+            case ANGRY_EYE:
+                angryEyes();
+                break;
+            case SAD_EYE:
+                sadEyes();
+                break;
+            case DAILY_EYE:
+                dailyEyes();
+                break;
+            case BAT_EYE:
+                batteryEyes();
+                break;
+            case DANGER_EYE:
+                dangerEyes();
+                break;
+            case MIC_WAITING_EYE:
+                micWaitingEyes();
+                break;
+            default:
+                break;
+        }
     }
 }
 
