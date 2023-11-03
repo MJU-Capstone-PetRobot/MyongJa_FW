@@ -18,7 +18,8 @@ start_time = time.time()
 def get_oscillating_value(freq=1):
     """Return a value oscillating between -2 and 2 based on a sine wave."""
     elapsed_time = time.time() - start_time
-    return 2 * math.sin(2 * math.pi * freq * elapsed_time)
+    return 3 * math.sin(2 * math.pi * freq * elapsed_time)
+
 
 def send_oscillating_data(serial_port):
     while True:

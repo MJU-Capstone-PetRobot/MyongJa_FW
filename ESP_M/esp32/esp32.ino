@@ -1,9 +1,9 @@
 #define DirectionPin (10u)
-#define BaudRate (1000000ul)
+#define BaudRate (115200ul)
 #define ID1 1
 #define ID2 2
 #define ID3 3
-#define ID4 4
+#define ID4 12
 
 #define TOUCH (6)
 #define MQ_7 (17)
@@ -54,6 +54,7 @@ void DisplaySensorTask(void *parameter) {
 
 
 void setup() {
+
     init_default_value();
 
     /* OPI - ESP 통신 */
@@ -65,8 +66,9 @@ void setup() {
     Serial.println("************************************");
 
     /* 목 서보모터 통신 */
-    Serial1.begin(1000000, SERIAL_8N1, 2, 1);  // UART RX(2), TX(1)
-    ax12a.begin(BaudRate, DirectionPin, &Serial1);
+      /* ESP_M - ESP_S 통신 */
+    Serial2.begin(115200, SERIAL_8N1, 40, 39); // UART RX(40), TX(39)
+    delay(100);
     delay(200);
     init_neck_position();
     move_neck(0, 0, 0, 80);
@@ -118,6 +120,7 @@ void setup() {
         2,                /* priority of the task */
         &CommsTaskHandle, /* Task handle to keep track of created task */
         1);               /* pin task to core 1 */
+
 }
 
 
