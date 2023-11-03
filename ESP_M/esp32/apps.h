@@ -78,14 +78,17 @@ void init_default_value() {
 
 void receive_from_touch()
 {
-    if (digitalRead(TOUCH) == HIGH)
+    static uint8_t touch_cnt = 0;
+
+    if (digitalRead(TOUCH) == HIGH) touch_cnt++;
+    else touch_cnt = 0;
+    
+    if(touch_cnt >= 5)
     {
-      myoungja.touch = true;
+        myoungja.touch = true;
+        touch_cnt = 5;
     }
-    else
-    {
-      myoungja.touch = false;
-    }
+    else myoungja.touch = false;
 
     if (myoungja.touch_prev == false && myoungja.touch == true)
     {
