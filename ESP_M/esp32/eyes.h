@@ -93,6 +93,7 @@ void closeEyes()
     switch(state)
     {
         case 0 :
+        case 10 : 
             dailyEyes();
             break;
         case 1 :
@@ -159,7 +160,7 @@ void closeEyes()
     }
 
     state++;
-    if(state == 10)
+    if(state == 11)
     {
         state = 0;
         myoungja.emo_close_flag = false;
