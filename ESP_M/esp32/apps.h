@@ -82,10 +82,10 @@ void receive_from_touch()
     if (digitalRead(TOUCH) == HIGH) touch_cnt++;
     else touch_cnt = 0;
     
-    if(touch_cnt >= 20)
+    if(touch_cnt >= 80)
     {
         myoungja.touch = true;
-        touch_cnt = 20;
+        touch_cnt = 80;
     }
     else myoungja.touch = false;
 
